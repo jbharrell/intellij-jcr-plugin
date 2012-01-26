@@ -11,7 +11,7 @@ import com.intellij.ui.content.ContentFactory;
 import velir.intellij.cq5.jcr.Connection;
 import velir.intellij.cq5.jcr.LightNode;
 import velir.intellij.cq5.jcr.model.VNodeDefinition;
-import velir.intellij.cq5.ui.JcrTree;
+import velir.intellij.cq5.ui.tree.JcrTree;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
@@ -24,7 +24,7 @@ public class JcrViewComponent extends AbstractProjectComponent {
 	/**
 	 * Constructor creating a new jcr view component.
 	 *
-	 * @param project
+	 * @param project The current project.
 	 */
 	protected JcrViewComponent(Project project) {
 		super(project);
@@ -33,7 +33,7 @@ public class JcrViewComponent extends AbstractProjectComponent {
 	@Override
 	public void projectOpened() {
 		super.projectOpened();
-		//setupToolWindow();
+		setupToolWindow();
 	}
 
 	@Override
@@ -75,6 +75,7 @@ public class JcrViewComponent extends AbstractProjectComponent {
 			//create our light node from our jcr node
 			rootNode = new LightNode(jcrRootNode);
 		} catch (RepositoryException rex) {
+			//TODO: log exception.
 		} finally {
 			//if we were able to retrieve a session then logout
 			if (session != null) {
