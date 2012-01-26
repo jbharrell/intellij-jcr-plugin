@@ -33,7 +33,7 @@ public class JcrViewComponent extends AbstractProjectComponent {
 	@Override
 	public void projectOpened() {
 		super.projectOpened();
-		setupToolWindow();
+		//setupToolWindow();
 	}
 
 	@Override

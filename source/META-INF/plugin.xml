@@ -16,6 +16,7 @@
   </project-components>
 
   <actions>
+	  <!--
       <group id="velir.intellij.cq5.actions.felix.Menu" text="Felix" description="Felix Actions">
           <add-to-group group-id="MainMenu" anchor="after" relative-to-action="VcsGroups" />
           <action id="velir.intellij.cq5.actions.felix.OpenServerConfiguration"
@@ -23,6 +24,7 @@
                   text="Open Server Configuration"
                   description="Open the Felix server configuration." />
       </group>
+      -->
 	  <action id="velir.intellij.cq5.actions.content.NewComponent" class="velir.intellij.cq5.actions.content.NewComponent" text="New Component"
 	          description="create a cq5 component">
 		  <add-to-group group-id="NewGroup" anchor="last"/>
