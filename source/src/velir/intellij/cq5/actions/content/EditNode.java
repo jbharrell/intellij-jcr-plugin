@@ -8,6 +8,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.Messages;
 import com.intellij.openapi.util.Computable;
+import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import org.jdom.JDOMException;
@@ -22,6 +23,27 @@ import java.io.IOException;
 public class EditNode extends AnAction {
 	private static final Logger log = LoggerFactory.getLogger(EditNode.class);
 
+
+	/**
+	 * returns the appropriate .content.xml file, or null if none exists
+	 * @param psiElement
+	 * @return
+	 */
+	private PsiFile getContentFile (PsiElement psiElement) {
+		if (psiElement instanceof PsiFile) {
+			PsiFile psiFile = (PsiFile) psiElement;
+			if (PsiUtils.CONTENT_XML.equals(psiFile.getName())) {
+				return psiFile;
+			}
+		} else if (psiElement instanceof PsiDirectory) {
+			PsiDirectory psiDirectory = (PsiDirectory) psiElement;
+			return psiDirectory.findFile(PsiUtils.CONTENT_XML);
+		}
+
+		// we did not find an appropriate .content.xml
+		return null;
+	}
+
 	@Override
 	public void update(AnActionEvent e) {
 		final DataContext dataContext = e.getDataContext();
@@ -29,12 +51,7 @@ public class EditNode extends AnAction {
 
 		final PsiElement element = (PsiElement)dataContext.getData(LangDataKeys.PSI_ELEMENT.getName());
 
-		boolean enabled = false;
-
-		if (element instanceof PsiFile) {
-			PsiFile psiFile = (PsiFile) element;
-			enabled = ".content.xml".equals(psiFile.getName());
-		}
+		boolean enabled = getContentFile(element) != null;
 
 		presentation.setVisible(enabled);
 		presentation.setEnabled(enabled);
@@ -47,11 +64,11 @@ public class EditNode extends AnAction {
 		IdeView ideView = LangDataKeys.IDE_VIEW.getData(dataContext);
 		Application application = ApplicationManager.getApplication();
 		final PsiElement element = (PsiElement)dataContext.getData(LangDataKeys.PSI_ELEMENT.getName());
+		final PsiFile psiFile = getContentFile(element);
 
-		if (element instanceof PsiFile) {
+		if (psiFile != null) {
 
 			// load node from xml file
-			final PsiFile psiFile = (PsiFile) element;
 			VNode vNode = application.runReadAction(new Computable<VNode>() {
 				public VNode compute() {
 					try {
