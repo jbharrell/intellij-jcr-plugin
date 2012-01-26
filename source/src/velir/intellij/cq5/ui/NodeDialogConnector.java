@@ -94,7 +94,7 @@ public class NodeDialogConnector {
 		JBScrollPane jbScrollPane = new JBScrollPane(propertiesPanel,
 				JBScrollPane.VERTICAL_SCROLLBAR_AS_NEEDED,
 				JBScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
-		jbScrollPane.setPreferredSize(new Dimension(400, 500));
+		jbScrollPane.setPreferredSize(new Dimension(600, 500));
 		rootPanel.add(jbScrollPane);
 
 		// separator
