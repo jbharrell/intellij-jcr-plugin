@@ -1,12 +1,11 @@
 package velir.intellij.cq5.ui;
 
 import velir.intellij.cq5.jcr.LightNode;
+import velir.intellij.cq5.ui.images.icons.IconFactory;
 
 import javax.swing.*;
 import javax.swing.tree.DefaultTreeCellRenderer;
 import java.awt.*;
-import java.io.IOException;
-import java.io.InputStream;
 
 /**
  * Custom tree cell render for rendering our jcr tree cells.
@@ -33,70 +32,16 @@ public class JcrTreeCellRenderer extends DefaultTreeCellRenderer {
 		//get our light node.
 		LightNode lightNode = (LightNode) node.getUserObject();
 
-		//if we don't have a light node then just return
-		if (lightNode == null) {
-			return this;
-		}
-
-		//pull out our node type
-		String nodeType = lightNode.getPrimaryNodeType();
-
-		//if we don't have a node type then just return
-		if (nodeType == null || "".equals(nodeType)) {
-			return this;
-		}
-
-		//split our node type on the colon
-		String[] split = nodeType.split(":");
-
-		//if we don't have exactly 2 parts then just return
-		if (split.length != 2) {
-			return this;
-		}
-
-		//pull out our folder and file names
-		String folder = split[0];
-		String file = split[1];
-
-		//get our icon
-		Icon icon = getIcon("/velir/intellij/cq5/ui/images/icons/" + folder + "/" + file + ".gif");
+		//get the icon for our node
+		Icon icon = IconFactory.getIcon(lightNode);
 
 		//if we didn't get an icon then get our default empty icon
-		if(icon == null){
-			icon = getIcon("/velir/intellij/cq5/ui/images/icons/empty.gif");
+		if (icon == null) {
+			icon = IconFactory.getIcon("empty.gif");
 		}
 
 		//set our icon and return
 		setIcon(icon);
 		return this;
-	}
-
-	/**
-	 * Will get our icon from the provided path.
-	 * @param path The path of the icon.
-	 * @return The icon or null.
-	 */
-	private Icon getIcon(String path){
-		//get our icon stream for our icon.
-		InputStream iconStream = this.getClass().getResourceAsStream(path);
-
-		//try to pull out our icon from our icon stream
-		Icon icon = null;
-		try {
-			//if we don't have an icon, just return
-			if (iconStream != null && iconStream.available() > 0) {
-				//pull out our image bytes from the icon stream.
-				byte[] imageData = new byte[iconStream.available()];
-				iconStream.read(imageData);
-
-				//create a new image icon from our bytes.
-				icon = new ImageIcon(imageData);
-			}
-		} catch (IOException ex) {
-			icon = null;
-		}
-
-		//return our icon
-		return icon;
 	}
 }
