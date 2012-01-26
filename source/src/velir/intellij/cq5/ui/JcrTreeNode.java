@@ -1,5 +1,7 @@
 package velir.intellij.cq5.ui;
 
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
 import org.apache.commons.lang.NullArgumentException;
 import velir.intellij.cq5.jcr.Connection;
 import velir.intellij.cq5.jcr.LightNode;
@@ -128,13 +130,15 @@ public class JcrTreeNode extends DefaultMutableTreeNode {
 		try {
 			//if we weren't provided a session then get a session
 			if (session == null) {
-				// TODO: fix this (cannot reconnect without Connection which needs Project)
+				//get our project
+				Project project = ProjectManager.getInstance().getDefaultProject();
 
 				//get our session
-				//session = Connection.getSession();
+				Connection connection = Connection.getInstance(project);
+				session = connection.getSession();
 
 				//set our flag indicating that we created our session
-				//sessionCreated = true;
+				sessionCreated = true;
 			}
 
 			//pull out our current jcr node.
@@ -168,6 +172,7 @@ public class JcrTreeNode extends DefaultMutableTreeNode {
 				}
 			}
 		} catch (RepositoryException rex) {
+			//TODO: log exception
 		} finally {
 			//if we created our session and it isn't null then logout
 			if (sessionCreated && session != null) {

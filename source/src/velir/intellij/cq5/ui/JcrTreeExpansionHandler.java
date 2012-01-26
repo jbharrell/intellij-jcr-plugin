@@ -1,5 +1,7 @@
 package velir.intellij.cq5.ui;
 
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
 import velir.intellij.cq5.jcr.Connection;
 
 import javax.jcr.RepositoryException;
@@ -16,7 +18,7 @@ public class JcrTreeExpansionHandler implements TreeExpansionListener {
 	/**
 	 * Event that will fire when the tree is expanded.
 	 *
-	 * @param evt
+	 * @param evt TreeExpansionEvent containing our event objects.
 	 */
 	public void treeExpanded(TreeExpansionEvent evt) {
 		//get the path that was expanded.
@@ -28,9 +30,11 @@ public class JcrTreeExpansionHandler implements TreeExpansionListener {
 		//declare our session.
 		Session session = null;
 		try {
-			// TODO: fix this (cannot connect without Connection which needs Project)
+			//get our project
+			Project project = ProjectManager.getInstance().getDefaultProject();
+
 			//get a session to our repository.
-			Connection connection = Connection.getInstance(null);
+			Connection connection = Connection.getInstance(project);
 			session = connection.getSession();
 
 			//populate our children and if any were added update our tree.
@@ -42,6 +46,7 @@ public class JcrTreeExpansionHandler implements TreeExpansionListener {
 				((DefaultTreeModel) tree.getModel()).nodeStructureChanged(node);
 			}
 		} catch (RepositoryException rex) {
+			//TODO: Log exception.
 		} finally {
 			if (session != null) {
 				session.logout();
@@ -52,7 +57,7 @@ public class JcrTreeExpansionHandler implements TreeExpansionListener {
 	/**
 	 * Event that will fire when the tree is collapsed.
 	 *
-	 * @param evt
+	 * @param evt TreeExpansionEvent containing our event objects.
 	 */
 	public void treeCollapsed(TreeExpansionEvent evt) {
 		//do nothing

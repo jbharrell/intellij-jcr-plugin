@@ -24,7 +24,7 @@ public class JcrViewComponent extends AbstractProjectComponent {
 	/**
 	 * Constructor creating a new jcr view component.
 	 *
-	 * @param project
+	 * @param project The current project.
 	 */
 	protected JcrViewComponent(Project project) {
 		super(project);
@@ -33,7 +33,7 @@ public class JcrViewComponent extends AbstractProjectComponent {
 	@Override
 	public void projectOpened() {
 		super.projectOpened();
-		//setupToolWindow();
+		setupToolWindow();
 	}
 
 	@Override
@@ -75,6 +75,7 @@ public class JcrViewComponent extends AbstractProjectComponent {
 			//create our light node from our jcr node
 			rootNode = new LightNode(jcrRootNode);
 		} catch (RepositoryException rex) {
+			//TODO: log exception.
 		} finally {
 			//if we were able to retrieve a session then logout
 			if (session != null) {
