@@ -126,6 +126,15 @@ public class VNode {
 		return propertyKeys;
 	}
 
+	// I'm not sure why escaping/unescaping is necessary
+	private static String escapeSlashes (String s) {
+		return s.replace("\\", "\\\\");
+	}
+
+	private static String unescapeSlashes (String s) {
+		return s.replace("\\\\", "\\");
+	}
+
 	private String getStringValue (Object o) {
 
 		if (o instanceof Long) {
@@ -163,11 +172,11 @@ public class VNode {
 			String[] ss = (String[]) o;
 			if (ss.length == 0) return s + "]";
 			for (int i = 0; i < ss.length - 1; i++) {
-				s += ss[i] + ",";
+				s += escapeSlashes(ss[i]) + ",";
 			}
-			return s + ss[ss.length - 1] + "]";
+			return s + escapeSlashes(ss[ss.length - 1]) + "]";
 		} else {
-			return o.toString();
+			return escapeSlashes(o.toString());
 		}
 	}
 
@@ -289,10 +298,15 @@ public class VNode {
 				String[] vals;
 				String valuesString = value.substring(1, value.length() - 1);
 				if ("".equals(valuesString)) vals = new String[0];
-				else  vals = valuesString.split(",");
+				else {
+					vals = valuesString.split(",");
+					for (int i = 0; i < vals.length; i++) {
+						vals[i] = unescapeSlashes(vals[i]);
+					}
+				}
 				vNode.setProperty(propertyName, vals);
 			} else {
-				vNode.setProperty(propertyName, value);
+				vNode.setProperty(propertyName, unescapeSlashes(value));
 			}
 		}
 
