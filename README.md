@@ -7,16 +7,18 @@ that they don't need to utilize CRXDE to edit jcr content (nodes/properties).
 Intended development process using this plugin
 ----------------------------------------------
 
-1. export jcr tree using vlt
-2. use plugin to "unpack" any existing xml specifying jcr nodes that you wish to edit (right click on xml file and
-select unpack xml)
-3. use vlt to import content back into the JCR (you should be able to import unpacked content)
+1.	Use vault to export the JCR tree to a folder in your project directory
+2.	Set up your connection settings under project settings
+3.	Unpack any xml files exported by vault that you wish to edit, other than .content.xml (right click on xml file and select unpack xml)
+4.	Delete the original xml file if everything looks ok (eventually this will be done automatically in the unpack step, when this plugin is more mature/battle-tested)
+5.	Right click on files/folders in the content tree to add/edit nodes.
+6.	Use vault to import your new content back into CRX (I recommend using slantedjavas setup: http://slantedjava.blogspot.com/2011/03/using-vault-from-intellij.html). You should be able to import unpacked content
 
 Setup
 -----
 
 Go to project settings -> JCR Connection Settings 
-You currently need to close/reopen project for changes to take effect, I think.
+You may need to close/reopen project for changes to take effect.
 Currently the plugin only uses the JCR to build node definitions.
 
 
