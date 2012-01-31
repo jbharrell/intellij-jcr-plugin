@@ -10,6 +10,7 @@ import java.util.*;
 
 public class VNodeDefinition {
 	public static final String JCR_AUTOCREATED = "jcr:autoCreated";
+	public static final String JCR_CONTENT = "jcr:content";
 	public static final String JCR_DEFAULTPRIMARYTYPE = "jcr:defaultPrimaryType";
 	public static final String JCR_ISMIXIN = "jcr:isMixin";
 	public static final String JCR_NAME = "jcr:name";
@@ -21,6 +22,7 @@ public class VNodeDefinition {
 	public static final String CQ_COMPONENT = "cq:Component";
 	public static final String CQ_ISCONTAINER = "cq:isContainer";
 	public static final String CQ_DIALOG = "cq:Dialog";
+	public static final String CQ_PAGECONTENT = "cq:PageContent";
 	public static final String CQ_TABPANEL = "cq:TabPanel";
 	public static final String CQ_TEMPLATE = "cq:Template";
 	public static final String CQ_WIDGET = "cq:Widget";
@@ -182,6 +184,7 @@ public class VNodeDefinition {
 					return "/content/.*";
 				}
 			});
+			vNodeDefinition.childSuggestions.put(JCR_CONTENT, CQ_PAGECONTENT);
 		}
 
 		else if (CQ_WIDGETCOLLECTION.equals(name)) {
