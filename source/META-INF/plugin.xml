@@ -30,11 +30,17 @@
 		        description="create a cq5 component">
 			<add-to-group group-id="NewGroup" anchor="last"/>
 		</action>
+		<action id="velir.intellij.cq5.actions.content.NewTemplate" class="velir.intellij.cq5.actions.content.NewTemplate"
+		        text="New Template"
+		        description="create a cq5 template">
+			<add-to-group group-id="NewGroup" anchor="after"
+			              relative-to-action="velir.intellij.cq5.actions.content.NewComponent"/>
+		</action>
 		<action id="velir.intellij.cq5.actions.content.NewNode" class="velir.intellij.cq5.actions.content.NewNode"
 		        text="New Node"
 		        description="create a cq5 node">
 			<add-to-group group-id="NewGroup" anchor="after"
-			              relative-to-action="velir.intellij.cq5.actions.content.NewComponent"/>
+			              relative-to-action="velir.intellij.cq5.actions.content.NewTemplate"/>
 		</action>
 		<action id="velir.intellij.cq5.actions.content.EditNode" class="velir.intellij.cq5.actions.content.EditNode"
 		        text="Edit Node"

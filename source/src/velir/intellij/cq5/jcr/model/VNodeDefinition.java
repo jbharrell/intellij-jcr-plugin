@@ -22,6 +22,7 @@ public class VNodeDefinition {
 	public static final String CQ_ISCONTAINER = "cq:isContainer";
 	public static final String CQ_DIALOG = "cq:Dialog";
 	public static final String CQ_TABPANEL = "cq:TabPanel";
+	public static final String CQ_TEMPLATE = "cq:Template";
 	public static final String CQ_WIDGET = "cq:Widget";
 	public static final String CQ_WIDGETCOLLECTION = "cq:WidgetCollection";
 	public static final String JCR_TITLE = "jcr:title";
@@ -173,6 +174,14 @@ public class VNodeDefinition {
 				}
 			});
 			vNodeDefinition.childSuggestions.put("items", CQ_TABPANEL);
+		}
+
+		else if (CQ_TEMPLATE.equals(name)) {
+			vNodeDefinition.properties.put("allowedPaths", new VPropertyDefinitionI() {
+				public Object getDefaultValue() {
+					return "/content/.*";
+				}
+			});
 		}
 
 		else if (CQ_WIDGETCOLLECTION.equals(name)) {
