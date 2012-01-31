@@ -181,7 +181,7 @@ public class VNodeDefinition {
 		else if (CQ_TEMPLATE.equals(name)) {
 			vNodeDefinition.properties.put("allowedPaths", new VPropertyDefinitionI() {
 				public Object getDefaultValue() {
-					return "/content/.*";
+					return "/content(/.*)?";
 				}
 			});
 			vNodeDefinition.childSuggestions.put(JCR_CONTENT, CQ_PAGECONTENT);
