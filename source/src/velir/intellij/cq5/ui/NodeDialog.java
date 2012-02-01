@@ -14,6 +14,8 @@ import javax.swing.event.DocumentListener;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.regex.Pattern;
@@ -119,271 +121,141 @@ public class NodeDialog extends DialogWrapper {
 
 	private void addMultiValueProperty(JPanel jPanel, final String name, Object o) {
 
+        final Set<JComponent> inputs = new HashSet<JComponent>();
+        final JPanel outerPanel = new JPanel(new VerticalFlowLayout());
+        final JPanel valuesPanel = new JPanel(new VerticalFlowLayout());
+        final Runnable setPropertyValues;
+        final Object valuePanelDefault;
 		if (o instanceof Long[]) {
-			final Set<RegexTextField> inputs = new HashSet<RegexTextField>();
-			final JPanel outerPanel = new JPanel(new VerticalFlowLayout());
-			final JPanel valuesPanel = new JPanel(new VerticalFlowLayout());
-
-			final Runnable setPropertyValues = new Runnable() {
+			setPropertyValues = new Runnable() {
 				public void run() {
 					Long[] values = new Long[inputs.size()];
 					int i = 0;
-					for (RegexTextField input : inputs) {
-						values[i++] = Long.parseLong(input.getText());
+					for (JComponent input : inputs) {
+                        String text = ((RegexTextField )input).getText();
+						values[i++] = (!"".equals(text))? Long.parseLong( text ) : 0L;
 					}
 					setProperty(name, values);
 				}
 			};
-
-			final Callback<Long> addValuePanel = new Callback<Long>() {
-				public void process(Long aLong) {
-					final JPanel innerPanel = new JPanel(new FlowLayout());
-
-					final RegexTextField regexTextField = new RegexTextField(Pattern.compile("[0-9]*"), aLong.toString());
-					new DocumentListenerAdder(regexTextField, new Callback<String>() {
-						public void process(String s) {
-							setPropertyValues.run();
-						}
-					});
-					inputs.add(regexTextField);
-					innerPanel.add(regexTextField);
-
-					// remove value button
-					JButton jButton = new JButton("X");
-					jButton.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							inputs.remove(regexTextField);
-							valuesPanel.remove(innerPanel);
-							valuesPanel.revalidate();
-
-							// set property now that value has been removed
-							setPropertyValues.run();
-						}
-					});
-					innerPanel.add(jButton);
-
-					valuesPanel.add(innerPanel);
-				}
-			};
-
-			// add a panel for each value of values array
-			for (Long lo : (Long[]) o ) {
-				addValuePanel.process(lo);
-			}
-			outerPanel.add(valuesPanel);
-
-			// add new value button
-			JButton jButton = new JButton("Add");
-			jButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					addValuePanel.process(0L);
-					setPropertyValues.run();
-					valuesPanel.revalidate();
-				}
-			});
-			outerPanel.add(jButton);
-
-			jPanel.add(outerPanel);
-		}
-		else if (o instanceof Double[]) {
-			final Set<RegexTextField> inputs = new HashSet<RegexTextField>();
-			final JPanel outerPanel = new JPanel(new VerticalFlowLayout());
-			final JPanel valuesPanel = new JPanel(new VerticalFlowLayout());
-
-			final Runnable setPropertyValues = new Runnable() {
+            valuePanelDefault = 0L;
+		} else if (o instanceof Double[]) {
+            setPropertyValues = new Runnable() {
 				public void run() {
 					Double[] values = new Double[inputs.size()];
 					int i = 0;
-					for (RegexTextField input : inputs) {
-						values[i++] = Double.parseDouble(input.getText());
+					for (JComponent input : inputs) {
+                        String text = ((RegexTextField )input).getText();
+						values[i++] = (!"".equals(text))? Double.parseDouble(text) : 0.0D;
 					}
 					setProperty(name, values);
 				}
 			};
 
-			final Callback<Double> addValuePanel = new Callback<Double>() {
-				public void process(Double aDouble) {
-					final JPanel innerPanel = new JPanel(new FlowLayout());
+            valuePanelDefault = 0.0D;
 
-					final RegexTextField regexTextField = new RegexTextField(Pattern.compile("[0-9]*\\.?[0-9]*"), aDouble.toString());
-					new DocumentListenerAdder(regexTextField, new Callback<String>() {
-						public void process(String s) {
-							setPropertyValues.run();
-						}
-					});
-					inputs.add(regexTextField);
-					innerPanel.add(regexTextField);
-
-					// remove value button
-					JButton jButton = new JButton("X");
-					jButton.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							inputs.remove(regexTextField);
-							valuesPanel.remove(innerPanel);
-							valuesPanel.revalidate();
-
-							// set property now that value has been removed
-							setPropertyValues.run();
-						}
-					});
-					innerPanel.add(jButton);
-
-					valuesPanel.add(innerPanel);
-				}
-			};
-
-			// add a panel for each value of values array
-			for (Double lo : (Double[]) o ) {
-				addValuePanel.process(lo);
-			}
-			outerPanel.add(valuesPanel);
-
-			// add new value button
-			JButton jButton = new JButton("Add");
-			jButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					addValuePanel.process(0.0D);
-					setPropertyValues.run();
-					valuesPanel.revalidate();
-				}
-			});
-			outerPanel.add(jButton);
-
-			jPanel.add(outerPanel);
-		}
-		else if (o instanceof Boolean[]) {
-			final Set<JCheckBox> inputs = new HashSet<JCheckBox>();
-			final JPanel outerPanel = new JPanel(new VerticalFlowLayout());
-			final JPanel valuesPanel = new JPanel(new VerticalFlowLayout());
-
-			final Runnable setPropertyValues = new Runnable() {
+		} else if (o instanceof Boolean[]) {
+			setPropertyValues = new Runnable() {
 				public void run() {
 					Boolean[] values = new Boolean[inputs.size()];
 					int i = 0;
-					for (JCheckBox input : inputs) {
-						values[i++] = input.isSelected();
+					for (JComponent input : inputs) {
+						values[i++] = ((JCheckBox) input).isSelected();
 					}
 					setProperty(name, values);
 				}
 			};
 
-			final Callback<Boolean> addValuePanel = new Callback<Boolean>() {
-				public void process(Boolean aBoolean) {
-					final JPanel innerPanel = new JPanel(new FlowLayout());
+            valuePanelDefault = false;
+		} else if (o instanceof String[]) {
+            setPropertyValues = new Runnable() {
+				public void run() {
+					String[] values = new String[inputs.size()];
+					int i = 0;
+					for (JComponent input : inputs) {
+						values[i++] = ((JTextField) input).getText();
+					}
+					setProperty(name, values);
+				}
+			};
 
-					final JCheckBox jCheckBox = new JCheckBox("", aBoolean);
+            valuePanelDefault = "";
+		} else {
+            return;
+        }
+
+        final Callback<Object> addValuePanel = new Callback<Object>() {
+            public void process(Object obj) {
+                final JPanel innerPanel = new JPanel(new FlowLayout());
+                final JComponent inputField;
+
+                if(obj instanceof Long || obj instanceof Double || obj instanceof String){
+                    JTextField jTextField;
+                    if(obj instanceof Long || obj instanceof Double){
+                        String regexPattern = (obj instanceof Long) ? "[0-9]*" : "[0-9]*\\.?[0-9]*";
+                        jTextField = new RegexTextField(Pattern.compile(regexPattern), obj.toString());
+                    } else {
+                        jTextField = new JTextField((String) obj);
+                        jTextField.setPreferredSize(RegexTextField.GOOD_SIZE);
+                    }
+
+                    new DocumentListenerAdder(jTextField, new Callback<String>() {
+                        public void process(String s) {
+                            setPropertyValues.run();
+                        }
+                    });
+                    inputField = jTextField;
+                } else if(obj instanceof Boolean){
+                    JCheckBox jCheckBox = new JCheckBox("", (Boolean) obj);
 					jCheckBox.addActionListener(new ActionListener() {
 						public void actionPerformed(ActionEvent e) {
 							setPropertyValues.run();
 						}
 					});
-					inputs.add(jCheckBox);
-					innerPanel.add(jCheckBox);
+                    inputField = jCheckBox;
+                } else {
+                    return;
+                }
 
-					// remove value button
-					JButton jButton = new JButton("X");
-					jButton.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							inputs.remove(jCheckBox);
-							valuesPanel.remove(innerPanel);
-							valuesPanel.revalidate();
+                inputs.add(inputField);
+                innerPanel.add(inputField);
 
-							// set property now that value has been removed
-							setPropertyValues.run();
-						}
-					});
-					innerPanel.add(jButton);
+                // remove value button
+                JButton jButton = new JButton("X");
+                jButton.addActionListener(new ActionListener() {
+                    public void actionPerformed(ActionEvent e) {
+                        inputs.remove(inputField);
+                        valuesPanel.remove(innerPanel);
+                        valuesPanel.revalidate();
 
-					valuesPanel.add(innerPanel);
-				}
-			};
+                        // set property now that value has been removed
+                        setPropertyValues.run();
+                    }
+                });
+                innerPanel.add(jButton);
 
-			// add a panel for each value of values array
-			for (Boolean bo : (Boolean[]) o ) {
-				addValuePanel.process(bo);
-			}
-			outerPanel.add(valuesPanel);
+                valuesPanel.add(innerPanel);
+            }
+		};
 
-			// add new value button
-			JButton jButton = new JButton("Add");
-			jButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					addValuePanel.process(false);
-					setPropertyValues.run();
-					valuesPanel.revalidate();
-				}
-			});
-			outerPanel.add(jButton);
+        // add a panel for each value of values array
+        for (Object lo : (Object[]) o ) {
+            addValuePanel.process(lo);
+        }
+        outerPanel.add(valuesPanel);
 
-			jPanel.add(outerPanel);
-		}
-		else if (o instanceof String[]) {
-			final Set<JTextField> inputs = new HashSet<JTextField>();
-			final JPanel outerPanel = new JPanel(new VerticalFlowLayout());
-			final JPanel valuesPanel = new JPanel(new VerticalFlowLayout());
+        // add new value button
+        JButton jButton = new JButton("Add");
+        jButton.addActionListener(new ActionListener() {
+            public void actionPerformed(ActionEvent e) {
+                addValuePanel.process(valuePanelDefault);
+                setPropertyValues.run();
+                valuesPanel.revalidate();
+            }
+        });
+        outerPanel.add(jButton);
 
-			final Runnable setPropertyValues = new Runnable() {
-				public void run() {
-					String[] values = new String[inputs.size()];
-					int i = 0;
-					for (JTextField input : inputs) {
-						values[i++] = input.getText();
-					}
-					setProperty(name, values);
-				}
-			};
-
-			final Callback<String> addValuePanel = new Callback<String>() {
-				public void process(String s) {
-					final JPanel innerPanel = new JPanel(new FlowLayout());
-
-					final JTextField jTextField = new JTextField(s);
-					jTextField.setPreferredSize(RegexTextField.GOOD_SIZE);
-					new DocumentListenerAdder(jTextField, new Callback<String>() {
-						public void process(String s) {
-							setPropertyValues.run();
-						}
-					});
-					inputs.add(jTextField);
-					innerPanel.add(jTextField);
-
-					// remove value button
-					JButton jButton = new JButton("X");
-					jButton.addActionListener(new ActionListener() {
-						public void actionPerformed(ActionEvent e) {
-							inputs.remove(jTextField);
-							valuesPanel.remove(innerPanel);
-							valuesPanel.revalidate();
-
-							// set property now that value has been removed
-							setPropertyValues.run();
-						}
-					});
-					innerPanel.add(jButton);
-
-					valuesPanel.add(innerPanel);
-				}
-			};
-
-			// add a panel for each value of values array
-			for (String s : (String[]) o ) {
-				addValuePanel.process(s);
-			}
-			outerPanel.add(valuesPanel);
-
-			// add new value button
-			JButton jButton = new JButton("Add");
-			jButton.addActionListener(new ActionListener() {
-				public void actionPerformed(ActionEvent e) {
-					addValuePanel.process("");
-					setPropertyValues.run();
-					valuesPanel.revalidate();
-				}
-			});
-			outerPanel.add(jButton);
-
-			jPanel.add(outerPanel);
-		}
+        jPanel.add(outerPanel);
 	}
 
 	private void addPropertyPanel (final JPanel parentPanel, final String name, final Object value) {
@@ -411,7 +283,7 @@ public class NodeDialog extends DialogWrapper {
 			final RegexTextField regexTextField = new RegexTextField(Pattern.compile("[0-9]*\\.?[0-9]*"), value.toString());
 			new DocumentListenerSingleAdder(name,regexTextField,new Anonymous<String, Object>() {
 				public Object call(String s) {
-					return Double.parseDouble(s);
+					return (!"".equals(s)) ? Double.parseDouble(s) : 0.0D;
 				}
 			});
 			regexTextField.setEditable(canAlter(name));
@@ -420,12 +292,29 @@ public class NodeDialog extends DialogWrapper {
 			final RegexTextField regexTextField = new RegexTextField(Pattern.compile("[0-9]*"), value.toString());
 			new DocumentListenerSingleAdder(name, regexTextField, new Anonymous<String, Object>() {
 				public Object call(String s) {
-					return Long.parseLong(s);
+					return (!"".equals(s)) ? Long.parseLong(s) : 0L;
 				}
 			});
 			regexTextField.setEditable(canAlter(name));
 			jPanel.add(regexTextField);
-		} else if (value instanceof Long[]
+		} else if(value instanceof Date){
+            SimpleDateFormat df = new SimpleDateFormat("MM/dd/yyyy");
+            String dateStr = df.format(value);
+            final JTextField jTextField = new JTextField(dateStr);
+            jTextField.setPreferredSize(RegexTextField.GOOD_SIZE);
+			new DocumentListenerSingleAdder(name, jTextField, new Anonymous<String, Object>() {
+				public Object call(String s) {
+                    try{
+                        SimpleDateFormat sdf = new SimpleDateFormat("MM/dd/yyyy");
+                        return sdf.parse(s);
+                    } catch(java.text.ParseException e){
+                        return new Date();
+                    }
+				}
+			});
+			jTextField.setEditable(canAlter(name));
+			jPanel.add(jTextField);
+        } else if (value instanceof Long[]
 				|| value instanceof Double[]
 				|| value instanceof Boolean[]
 				|| value instanceof String[]) {
@@ -548,7 +437,9 @@ public class NodeDialog extends DialogWrapper {
 					addPropertyPanel(propertiesPanel, jTextField.getText(), 0L);
 				} else if (VNode.DOUBLE_PREFIX.equals(type)) {
 					addPropertyPanel(propertiesPanel, jTextField.getText(), 0.0D);
-				} else if ((VNode.LONG_PREFIX + "[]").equals(type)) {
+				} else if(VNode.DATE_PREFIX.equals(type)){
+                    addPropertyPanel(propertiesPanel, jTextField.getText(), new Date());
+                }  else if ((VNode.LONG_PREFIX + "[]").equals(type)) {
 					addPropertyPanel(propertiesPanel, jTextField.getText(), new Long[] {0L});
 				} else if ((VNode.DOUBLE_PREFIX + "[]").equals(type)) {
 					addPropertyPanel(propertiesPanel, jTextField.getText(), new Double[] {0.0D});
@@ -556,7 +447,7 @@ public class NodeDialog extends DialogWrapper {
 					addPropertyPanel(propertiesPanel, jTextField.getText(), new Boolean[] {false});
 				} else if ("{String}[]".equals(type)) {
 					addPropertyPanel(propertiesPanel, jTextField.getText(), new String[] {""});
-				} else {
+				}else {
 					addPropertyPanel(propertiesPanel, jTextField.getText(), "");
 				}
 				propertiesPanel.revalidate();

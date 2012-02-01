@@ -1,5 +1,6 @@
 package velir.intellij.cq5.jcr.model;
 
+import com.day.cq.commons.date.InvalidDateException;
 import com.intellij.openapi.util.JDOMUtil;
 import org.jdom.*;
 import org.slf4j.Logger;
@@ -8,6 +9,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.regex.Pattern;
+import com.day.cq.commons.date.DateUtil;
 
 public class VNode {
 
@@ -22,7 +24,7 @@ public class VNode {
 	public static final String[] TYPESTRINGS = {
 			"{String}",
 			BOOLEAN_PREFIX,
-			//DATE_PREFIX,
+			DATE_PREFIX,
 			DOUBLE_PREFIX,
 			//NAME_PREFIX,
 			//PATH_PREFIX,
@@ -175,9 +177,13 @@ public class VNode {
 				s += escapeSlashes(ss[i]) + ",";
 			}
 			return s + escapeSlashes(ss[ss.length - 1]) + "]";
-		} else {
+		} else if(o instanceof Date){
+            //In format 2009-03-17T11:03:04.849+01:00
+            return DATE_PREFIX + DateUtil.getISO8601Date((Date) o);
+        } else if(null != o){
 			return escapeSlashes(o.toString());
 		}
+        return "";
 	}
 
 	public Element getElement() {
@@ -294,7 +300,17 @@ public class VNode {
 			} else if (value.startsWith(LONG_PREFIX)) {
 				Long l = Long.parseLong(value.replaceFirst(Pattern.quote(LONG_PREFIX), ""));
 				vNode.setProperty(propertyName, l);
-			} else if (value.startsWith("[")) {
+			} else if(value.startsWith(DATE_PREFIX)){
+                try{
+                    String dateStr = value.replaceFirst(Pattern.quote(DATE_PREFIX), "");
+                    Calendar cal = DateUtil.parseISO8601(dateStr);
+                    vNode.setProperty(propertyName, cal.getTime());
+                } catch (InvalidDateException e){
+                   //TODO: Log error or set a default value
+                    vNode.setProperty(propertyName, new Date());
+                }
+            }
+            else if (value.startsWith("[")) {
 				String[] vals;
 				String valuesString = value.substring(1, value.length() - 1);
 				if ("".equals(valuesString)) vals = new String[0];
