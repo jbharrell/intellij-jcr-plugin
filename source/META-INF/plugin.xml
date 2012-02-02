@@ -108,4 +108,9 @@
 		                serviceImplementation="velir.intellij.cq5.jcr.Connection"/>
 		<projectConfigurable implementation="velir.intellij.cq5.config.JcrSettings"/>
 	</extensions>
+	<module-components>
+		<component>
+			<implementation-class>velir.intellij.cq5.modules.JCRModule</implementation-class>
+		</component>
+	</module-components>
 </idea-plugin>
