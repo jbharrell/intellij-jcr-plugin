@@ -1,4 +1,4 @@
-package velir.intellij.cq5.modules;
+package velir.intellij.cq5.module;
 
 import com.intellij.openapi.module.ModuleComponent;
 import com.intellij.openapi.module.Module;
