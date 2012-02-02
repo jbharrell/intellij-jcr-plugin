@@ -2,7 +2,6 @@ package velir.intellij.cq5.jcr.model;
 
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
-import com.intellij.openapi.util.Computable;
 import velir.intellij.cq5.jcr.Connection;
 
 import javax.jcr.*;
@@ -19,6 +18,7 @@ public class VNodeDefinition {
 	public static final String JCR_SUPERTYPES = "jcr:supertypes";
 	public static final String NT_CHILDNODEDEFINITION = "nt:childNodeDefinition";
 	public static final String NT_PROPERTYDEFINITION = "nt:propertyDefinition";
+	public static final String CQ_CELLNAME = "cq:cellName";
 	public static final String CQ_COMPONENT = "cq:Component";
 	public static final String CQ_ISCONTAINER = "cq:isContainer";
 	public static final String CQ_DIALOG = "cq:Dialog";
@@ -165,6 +165,7 @@ public class VNodeDefinition {
 					return "General";
 				}
 			});
+			vNodeDefinition.properties.remove(CQ_CELLNAME); // causes problems if blank (and maybe in general)
 			vNodeDefinition.childSuggestions.put("dialog", CQ_DIALOG);
 			vNodeDefinition.childSuggestions.put("design_dialog", CQ_DIALOG);
 		}
