@@ -1,10 +1,10 @@
-package velir.intellij.cq5.ui.tree.handlers;
+package velir.intellij.cq5.ui.jcr.tree.handlers;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import velir.intellij.cq5.jcr.Connection;
-import velir.intellij.cq5.ui.tree.JcrTree;
-import velir.intellij.cq5.ui.tree.JcrTreeNode;
+import velir.intellij.cq5.ui.jcr.tree.JcrTree;
+import velir.intellij.cq5.ui.jcr.tree.JcrTreeNode;
 
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;

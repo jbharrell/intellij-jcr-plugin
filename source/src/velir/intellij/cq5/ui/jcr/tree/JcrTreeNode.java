@@ -1,4 +1,4 @@
-package velir.intellij.cq5.ui.tree;
+package velir.intellij.cq5.ui.jcr.tree;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;

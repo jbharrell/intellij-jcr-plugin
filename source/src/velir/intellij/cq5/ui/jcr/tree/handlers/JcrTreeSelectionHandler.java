@@ -1,4 +1,4 @@
-package velir.intellij.cq5.ui.tree.handlers;
+package velir.intellij.cq5.ui.jcr.tree.handlers;
 
 import javax.swing.event.TreeSelectionEvent;
 import javax.swing.event.TreeSelectionListener;

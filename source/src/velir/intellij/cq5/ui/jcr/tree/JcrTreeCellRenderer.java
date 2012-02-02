@@ -1,4 +1,4 @@
-package velir.intellij.cq5.ui.tree;
+package velir.intellij.cq5.ui.jcr.tree;
 
 import velir.intellij.cq5.jcr.LightNode;
 import velir.intellij.cq5.ui.images.icons.IconFactory;

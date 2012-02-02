@@ -1,10 +1,10 @@
-package velir.intellij.cq5.ui.tree;
+package velir.intellij.cq5.ui.jcr.tree;
 
 import com.intellij.ui.treeStructure.Tree;
 import velir.intellij.cq5.jcr.LightNode;
-import velir.intellij.cq5.ui.tree.handlers.JcrTreeExpansionHandler;
-import velir.intellij.cq5.ui.tree.handlers.JcrTreeMouseHandler;
-import velir.intellij.cq5.ui.tree.handlers.JcrTreeSelectionHandler;
+import velir.intellij.cq5.ui.jcr.tree.handlers.JcrTreeExpansionHandler;
+import velir.intellij.cq5.ui.jcr.tree.handlers.JcrTreeMouseHandler;
+import velir.intellij.cq5.ui.jcr.tree.handlers.JcrTreeSelectionHandler;
 
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;

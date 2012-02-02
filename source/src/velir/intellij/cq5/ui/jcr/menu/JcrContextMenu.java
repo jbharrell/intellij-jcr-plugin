@@ -1,4 +1,4 @@
-package velir.intellij.cq5.ui.menu;
+package velir.intellij.cq5.ui.jcr.menu;
 
 import javax.swing.*;
 
@@ -10,6 +10,6 @@ public class JcrContextMenu extends JPopupMenu {
 	public JcrContextMenu(){
 		super();
 
-		add(new JMenuItem("test"));
+		add(new AddNodeMenuItem("test"));
 	}
 }

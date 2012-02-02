@@ -1,7 +1,7 @@
-package velir.intellij.cq5.ui.tree.handlers;
+package velir.intellij.cq5.ui.jcr.tree.handlers;
 
-import velir.intellij.cq5.ui.menu.JcrContextMenu;
-import velir.intellij.cq5.ui.tree.JcrTree;
+import velir.intellij.cq5.ui.jcr.menu.JcrContextMenu;
+import velir.intellij.cq5.ui.jcr.tree.JcrTree;
 
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;

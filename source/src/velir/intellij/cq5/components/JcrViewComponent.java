@@ -11,7 +11,7 @@ import com.intellij.ui.content.ContentFactory;
 import velir.intellij.cq5.jcr.Connection;
 import velir.intellij.cq5.jcr.LightNode;
 import velir.intellij.cq5.jcr.model.VNodeDefinition;
-import velir.intellij.cq5.ui.tree.JcrTree;
+import velir.intellij.cq5.ui.jcr.tree.JcrTree;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
