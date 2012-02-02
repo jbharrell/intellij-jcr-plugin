@@ -2,8 +2,11 @@
   <library name="cq5">
     <CLASSES>
       <root url="jar://$PROJECT_DIR$/../libs/cq5/com.day.jcr.vault-2.3.6.jar!/" />
+      <root url="jar://$PROJECT_DIR$/../libs/cq5/cq-commons-5.4.6.jar!/" />
     </CLASSES>
-    <JAVADOC />
+    <JAVADOC>
+      <root url="jar://$PROJECT_DIR$/../libs/cq5/cq-commons-5.4.6-javadoc.jar!/" />
+    </JAVADOC>
     <SOURCES />
   </library>
 </component>
