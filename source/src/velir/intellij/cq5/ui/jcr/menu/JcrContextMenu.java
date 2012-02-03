@@ -1,5 +1,8 @@
 package velir.intellij.cq5.ui.jcr.menu;
 
+import velir.intellij.cq5.ui.jcr.menu.handlers.CreateNodeHandler;
+import velir.intellij.cq5.ui.jcr.tree.JcrTree;
+
 import javax.swing.*;
 
 /**
@@ -7,9 +10,14 @@ import javax.swing.*;
  * in the jcr tree.
  */
 public class JcrContextMenu extends JPopupMenu {
-	public JcrContextMenu(){
+	public JcrContextMenu(JcrTree tree) {
 		super();
 
-		add(new AddNodeMenuItem("test"));
+		//create our create add node menu item.
+		JcrMenuItem createNode = new JcrMenuItem(tree, "Create Node");
+		createNode.addActionListener(new CreateNodeHandler(tree));
+
+		//add our menu item to our menu.
+		add(createNode);
 	}
 }

@@ -31,8 +31,13 @@ public class JcrTreeMouseHandler extends MouseAdapter {
 	}
 
 	private void mouseRightClick(MouseEvent evt) {
-		//get our context menu
-		JcrContextMenu menu = new JcrContextMenu();
+		//get our tree from the event
+		JcrTree tree = (JcrTree) evt.getSource();
+
+		//create our context menu and pass in our tree.
+		JcrContextMenu menu = new JcrContextMenu(tree);
+
+		//show our menu.
 		menu.show((JcrTree) evt.getSource(), evt.getX(), evt.getY());
 	}
 }
