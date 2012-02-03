@@ -27,19 +27,10 @@ public class Connection implements PersistentStateComponent<Connection.State>{
 		public String workspace;
 	}
 
-	private static final String REPOSITORY_URL = "http://localhost:4502/crx/server";
-	private static final String USERNAME = "admin";
-	private static final String PASSWORD = "admin";
-	private static final String WORKSPACE = "crx.default";
 
 	private State state;
 
 	private Connection () {
-		state = new State();
-		state.url = REPOSITORY_URL;
-		state.username = USERNAME;
-		state.password = PASSWORD;
-		state.workspace = WORKSPACE;
 	}
 
 	public static Connection getInstance(Project project) {

@@ -111,7 +111,7 @@
 	</extensions>
 	<module-components>
 		<component>
-			<implementation-class>velir.intellij.cq5.module.JCRModule</implementation-class>
+			<implementation-class>velir.intellij.cq5.module.JCRModuleConfiguration</implementation-class>
 		</component>
 	</module-components>
 </idea-plugin>

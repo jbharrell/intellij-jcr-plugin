@@ -18,6 +18,13 @@ import java.util.List;
 public class JCRModuleBuilder extends ModuleBuilder implements SourcePathsBuilder {
 	private List<Pair<String,String>> mySourcePaths;
 	private String myContentEntryPath;
+	private JCRModuleConfiguration.State state;
+
+	public JCRModuleBuilder () {
+		super();
+
+		state = new JCRModuleConfiguration.State();
+	}
 
 	@Override
 	public void setupRootModel(ModifiableRootModel modifiableRootModel) throws ConfigurationException {
