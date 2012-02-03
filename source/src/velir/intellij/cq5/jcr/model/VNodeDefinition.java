@@ -51,7 +51,7 @@ public class VNodeDefinition {
 		NodeIterator nodeIterator = node.getNodes();
 		while (nodeIterator.hasNext()) {
 			Node definitionNode = nodeIterator.nextNode();
-			String nodeType = definitionNode.getProperty(VNode.JCR_PRIMARYTYPE).getString();
+			String nodeType = definitionNode.getProperty(AbstractProperty.JCR_PRIMARYTYPE).getString();
 
 			// do a property
 			if (NT_PROPERTYDEFINITION.equals(nodeType)) {
@@ -92,12 +92,16 @@ public class VNodeDefinition {
 		isMixin = node.hasProperty(JCR_ISMIXIN) && node.getProperty(JCR_ISMIXIN).getBoolean();
 	}
 
-	public Map<String, Object> getPropertiesMap (boolean includePrimaryType) {
-		Map<String,Object> propertiesMap = new HashMap<String, Object>();
+	public Map<String, VProperty> getPropertiesMap (boolean includePrimaryType) {
+		Map<String,VProperty> propertiesMap = new HashMap<String, VProperty>();
 		for (Map.Entry<String, VPropertyDefinitionI> entry : properties.entrySet()) {
-			propertiesMap.put(entry.getKey(), entry.getValue().getDefaultValue());
+            //TODO: Replace with VProperty Factory
+            VProperty newProp = new XMLProperty(name, entry.getValue().getDefaultValue() );
+			propertiesMap.put(entry.getKey(), newProp);
 		}
-		if (includePrimaryType) propertiesMap.put(VNode.JCR_PRIMARYTYPE, name);
+		if (includePrimaryType) {
+            propertiesMap.put(AbstractProperty.JCR_PRIMARYTYPE, new XMLProperty(AbstractProperty.JCR_PRIMARYTYPE, name));
+        }
 
 		// also get supertype properties
 		for (String supertype : supertypes) {

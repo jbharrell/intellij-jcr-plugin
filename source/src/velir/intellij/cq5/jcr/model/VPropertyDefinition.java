@@ -6,6 +6,7 @@ import org.slf4j.LoggerFactory;
 
 import javax.jcr.Node;
 import javax.jcr.RepositoryException;
+import java.util.Date;
 
 public class VPropertyDefinition implements VPropertyDefinitionI {
 	public static final String STRING = "STRING";
@@ -39,11 +40,13 @@ public class VPropertyDefinition implements VPropertyDefinitionI {
 			if (LONG.equals(type)) return new Long[] {0L};
 			else if (DOUBLE.equals(type)) return new Double[] {0.0D};
 			else if (BOOLEAN.equals(type)) return new Boolean[] {false};
+            else if (DATE.equals(type)) return new Date[] { new Date() };
 			else return new String[] {""};
 		} else {
 			if (LONG.equals(type)) return 0L;
 			else if (DOUBLE.equals(type)) return 0.0D;
 			else if (BOOLEAN.equals(type)) return false;
+            else if (DATE.equals(type)) return new Date();
 			else return "";
 		}
 	}

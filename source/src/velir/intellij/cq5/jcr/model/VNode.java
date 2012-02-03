@@ -13,28 +13,6 @@ import com.day.cq.commons.date.DateUtil;
 
 public class VNode {
 
-	public static final String JCR_PRIMARYTYPE = "jcr:primaryType";
-	public static final String BOOLEAN_PREFIX = "{Boolean}";
-	public static final String DATE_PREFIX = "{Date}";
-	public static final String DOUBLE_PREFIX = "{Double}";
-	public static final String LONG_PREFIX = "{Long}";
-	public static final String NAME_PREFIX = "{Name}";
-	public static final String PATH_PREFIX = "{Path}";
-	public static final String BINARY_PREFIX = "{Binary}";
-	public static final String[] TYPESTRINGS = {
-			"{String}",
-			BOOLEAN_PREFIX,
-			DATE_PREFIX,
-			DOUBLE_PREFIX,
-			//NAME_PREFIX,
-			//PATH_PREFIX,
-			//BINARY_PREFIX,
-			LONG_PREFIX,
-			LONG_PREFIX + "[]",
-			DOUBLE_PREFIX + "[]",
-			BOOLEAN_PREFIX + "[]",
-			"{String}[]"
-	};
 	private static final Logger log = LoggerFactory.getLogger(VNode.class);
 
 	public static Map<String,Namespace> namespaces;
@@ -48,12 +26,12 @@ public class VNode {
 	}
 
 	private String name;
-	private Map<String, Object> properties;
+	private Map<String, VProperty> properties;
 	protected boolean canChangeType;
 
 	private VNode (String name) {
 		this.name = name;
-		properties = new HashMap<String, Object>();
+		properties = new HashMap<String, VProperty>();
 		canChangeType = false;
 	}
 
@@ -65,21 +43,18 @@ public class VNode {
 		if (vNodeDefinition != null) {
 			properties = vNodeDefinition.getPropertiesMap(false);
 		} else {
-			properties = new HashMap<String, Object>();
+			properties = new HashMap<String, VProperty>();
 		}
-		properties.put(JCR_PRIMARYTYPE, type);
+        //TODO: Replace with VProperty factory
+		properties.put(AbstractProperty.JCR_PRIMARYTYPE, new XMLProperty(AbstractProperty.JCR_PRIMARYTYPE, type));
 		canChangeType = true;
 	}
 
-	public void setProperty (String name, Object value) {
+	public void setProperty (String name, VProperty value) {
 		properties.put(name, value);
 	}
 
-	public <T> T getProperty (String name, Class<T> type) {
-		return (T) properties.get(name);
-	}
-
-	public Object getProperty (String name) {
+	public VProperty getProperty (String name) {
 		return properties.get(name);
 	}
 
@@ -97,7 +72,7 @@ public class VNode {
 	 * @return
 	 */
 	public boolean canRemove (String name) {
-		return (! JCR_PRIMARYTYPE.equals(name));
+		return (! AbstractProperty.JCR_PRIMARYTYPE.equals(name));
 	}
 
 	/**
@@ -118,7 +93,8 @@ public class VNode {
 	}
 
 	public String getType () {
-		return getProperty(JCR_PRIMARYTYPE, String.class);
+        VProperty prop = getProperty(AbstractProperty.JCR_PRIMARYTYPE);
+		return (null != prop)? (String) prop.getValue(): null;
 	}
 
 	public String[] getSortedPropertyNames () {
@@ -128,70 +104,12 @@ public class VNode {
 		return propertyKeys;
 	}
 
-	// I'm not sure why escaping/unescaping is necessary
-	private static String escapeSlashes (String s) {
-		return s.replace("\\", "\\\\");
-	}
-
-	private static String unescapeSlashes (String s) {
-		return s.replace("\\\\", "\\");
-	}
-
-	private String getStringValue (Object o) {
-
-		if (o instanceof Long) {
-			return LONG_PREFIX + o.toString();
-		} else if (o instanceof Boolean) {
-			return BOOLEAN_PREFIX + o.toString();
-		} else if (o instanceof Double) {
-			return DOUBLE_PREFIX + o.toString();
-		} else if (o instanceof Long[]) {
-			String s = LONG_PREFIX + "[";
-			Long[] ls = (Long[]) o;
-			if (ls.length == 0) return s + "]";
-			for (int i = 0; i < ls.length - 1; i++) {
-				s += ls[i].toString() + ",";
-			}
-			return s + ls[ls.length - 1] + "]";
-		} else if (o instanceof Boolean[]) {
-			String s = BOOLEAN_PREFIX + "[";
-			Boolean[] ls = (Boolean[]) o;
-			if (ls.length == 0) return s + "]";
-			for (int i = 0; i < ls.length - 1; i++) {
-				s += ls[i].toString() + ",";
-			}
-			return s + ls[ls.length - 1] + "]";
-		} else if (o instanceof Double[]) {
-			String s = DOUBLE_PREFIX + "[";
-			Double[] ls = (Double[]) o;
-			if (ls.length == 0) return s + "]";
-			for (int i = 0; i < ls.length - 1; i++) {
-				s += ls[i].toString() + ",";
-			}
-			return s + ls[ls.length - 1] + "]";
-		} else if (o instanceof String[]) {
-			String s = "[";
-			String[] ss = (String[]) o;
-			if (ss.length == 0) return s + "]";
-			for (int i = 0; i < ss.length - 1; i++) {
-				s += escapeSlashes(ss[i]) + ",";
-			}
-			return s + escapeSlashes(ss[ss.length - 1]) + "]";
-		} else if(o instanceof Date){
-            //In format 2009-03-17T11:03:04.849+01:00
-            return DATE_PREFIX + DateUtil.getISO8601Date((Date) o);
-        } else if(null != o){
-			return escapeSlashes(o.toString());
-		}
-        return "";
-	}
-
 	public Element getElement() {
 		Element element = new Element("root", namespaces.get("jcr"));
 		Set<String> elementNamespaces = new HashSet<String>();
 
 		// properties
-		for (Map.Entry<String,Object> property : properties.entrySet()) {
+		for (Map.Entry<String,VProperty> property : properties.entrySet()) {
 
 			// get namespace from property string, if there
 			Namespace propertyNamespace = null;
@@ -215,7 +133,7 @@ public class VNode {
 
 			// prepend string value with property type
 			Object value = property.getValue();
-			String propertyStringValue = getStringValue(value);
+			String propertyStringValue = value.toString();
 
 			// set property
 			if (propertyNamespace != null) {
@@ -252,78 +170,11 @@ public class VNode {
 			Attribute attribute = (Attribute) o;
 
 			String propertyName = attribute.getQualifiedName();
-			String value = attribute.getValue();
+			String valueStr = attribute.getValue();
 
-			// choose which type of object to insert
-			if (value.startsWith(BOOLEAN_PREFIX + "[")) {
-				Boolean[] vals;
-				String valuesString = value.substring(0, value.length() - 1).replaceFirst(Pattern.quote(BOOLEAN_PREFIX + "["), "");
-				if ("".equals(valuesString)) vals = new Boolean[0];
-				else {
-					String[] valueBits = valuesString.split(",");
-					vals = new Boolean[valueBits.length];
-					for (int i = 0; i < valueBits.length; i++) {
-						vals[i] = Boolean.parseBoolean(valueBits[i]);
-					}
-				}
-				vNode.setProperty(propertyName, vals);
-			} else if (value.startsWith(BOOLEAN_PREFIX)) {
-				Boolean b = Boolean.parseBoolean(value.replaceFirst(Pattern.quote(BOOLEAN_PREFIX), ""));
-				vNode.setProperty(propertyName, b);
-			} else if (value.startsWith(DOUBLE_PREFIX + "[")) {
-				Double[] vals;
-				String valuesString = value.substring(0, value.length() - 1).replaceFirst(Pattern.quote(DOUBLE_PREFIX + "["), "");
-				if ("".equals(valuesString)) vals = new Double[0];
-				else {
-					String[] valueBits = valuesString.split(",");
-					vals = new Double[valueBits.length];
-					for (int i = 0; i < valueBits.length; i++) {
-						vals[i] = Double.parseDouble(valueBits[i]);
-					}
-				}
-				vNode.setProperty(propertyName, vals);
-			} else if (value.startsWith(DOUBLE_PREFIX)) {
-				Double d = Double.parseDouble(value.replaceFirst(Pattern.quote(DOUBLE_PREFIX), ""));
-				vNode.setProperty(propertyName, d);
-			} else if (value.startsWith(LONG_PREFIX + "[")) {
-				Long[] vals;
-				String valuesString = value.substring(0, value.length() - 1).replaceFirst(Pattern.quote(LONG_PREFIX + "["), "");
-				if ("".equals(valuesString)) vals = new Long[0];
-				else {
-					String[] valueBits = valuesString.split(",");
-					vals = new Long[valueBits.length];
-					for (int i = 0; i < valueBits.length; i++) {
-						vals[i] = Long.parseLong(valueBits[i]);
-					}
-				}
-				vNode.setProperty(propertyName, vals);
-			} else if (value.startsWith(LONG_PREFIX)) {
-				Long l = Long.parseLong(value.replaceFirst(Pattern.quote(LONG_PREFIX), ""));
-				vNode.setProperty(propertyName, l);
-			} else if(value.startsWith(DATE_PREFIX)){
-                try{
-                    String dateStr = value.replaceFirst(Pattern.quote(DATE_PREFIX), "");
-                    Calendar cal = DateUtil.parseISO8601(dateStr);
-                    vNode.setProperty(propertyName, cal.getTime());
-                } catch (InvalidDateException e){
-                   //TODO: Log error or set a default value
-                    vNode.setProperty(propertyName, new Date());
-                }
-            }
-            else if (value.startsWith("[")) {
-				String[] vals;
-				String valuesString = value.substring(1, value.length() - 1);
-				if ("".equals(valuesString)) vals = new String[0];
-				else {
-					vals = valuesString.split(",");
-					for (int i = 0; i < vals.length; i++) {
-						vals[i] = unescapeSlashes(vals[i]);
-					}
-				}
-				vNode.setProperty(propertyName, vals);
-			} else {
-				vNode.setProperty(propertyName, unescapeSlashes(value));
-			}
+            //TODO: Get Property from a factory
+            VProperty prop = XMLProperty.makeFromValueStr(propertyName, valueStr);
+            vNode.setProperty(propertyName, prop);
 		}
 
 		vNode.canChangeType = false;

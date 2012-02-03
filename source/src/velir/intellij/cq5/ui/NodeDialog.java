@@ -4,8 +4,7 @@ import com.intellij.openapi.project.Project;
 import com.intellij.openapi.ui.DialogWrapper;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import com.intellij.ui.components.JBScrollPane;
-import velir.intellij.cq5.jcr.model.VNode;
-import velir.intellij.cq5.jcr.model.VNodeDefinition;
+import velir.intellij.cq5.jcr.model.*;
 import velir.intellij.cq5.util.Anonymous;
 
 import javax.swing.*;
@@ -50,23 +49,21 @@ public class NodeDialog extends DialogWrapper {
 
 		for (String key : vNode.getSortedPropertyNames()) {
 			// don't add another primaryType selector
-			if (! VNode.JCR_PRIMARYTYPE.equals(key)) {
+			if (! AbstractProperty.JCR_PRIMARYTYPE.equals(key)) {
 				addPropertyPanel(propertiesPanel, key, getProperty(key));
 			}
 		}
 		propertiesPanel.revalidate();
 	}
 
-	private <T> T getProperty (String name, Class<T> type) {
-		return vNode.getProperty(name, type);
-	}
-
 	private Object getProperty (String name) {
-		return vNode.getProperty(name);
+        VProperty prop = vNode.getProperty(name);
+		return (null != prop)? prop.getValue() : null;
 	}
 
 	private void setProperty (String name, Object o) {
-		vNode.setProperty(name, o);
+        XMLProperty prop = new XMLProperty(name, o);
+		vNode.setProperty(name, prop);
 	}
 
 	private boolean hasProperty (String name) {
@@ -377,11 +374,12 @@ public class NodeDialog extends DialogWrapper {
 		JLabel primaryTypeLabel = new JLabel("type");
 		primaryTypePanel.add(primaryTypeLabel);
 		// only allow selecting of node type on node creation
+        String jcrType = (String) getProperty(AbstractProperty.JCR_PRIMARYTYPE);
 		if (canChangeType) {
 			// add selector for primaryType if we could connect to the JCR and built definitions
 			if (VNodeDefinition.hasDefinitions()) {
 				final JComboBox jComboBox = new JComboBox(VNodeDefinition.getNodeTypeNames());
-				jComboBox.setSelectedItem(getProperty(VNode.JCR_PRIMARYTYPE, String.class));
+				jComboBox.setSelectedItem(jcrType);
 				jComboBox.addActionListener(new ActionListener() {
 					public void actionPerformed(ActionEvent e) {
 						String newPrimaryType = (String) jComboBox.getSelectedItem();
@@ -392,8 +390,8 @@ public class NodeDialog extends DialogWrapper {
 			}
 			// if we couldn't connect to the JCR, just allow the user to put anything in for primary type
 			else {
-				JTextField primaryTypeField = new JTextField(getProperty(VNode.JCR_PRIMARYTYPE, String.class));
-				new DocumentListenerSingleAdder(VNode.JCR_PRIMARYTYPE, primaryTypeField, new Anonymous<String, Object>() {
+				JTextField primaryTypeField = new JTextField(jcrType);
+				new DocumentListenerSingleAdder(AbstractProperty.JCR_PRIMARYTYPE, primaryTypeField, new Anonymous<String, Object>() {
 					public Object call(String s) {
 						return s;
 					}
@@ -401,7 +399,7 @@ public class NodeDialog extends DialogWrapper {
 				primaryTypePanel.add(primaryTypeField);
 			}
 		} else {
-			JTextField primaryTypeField = new JTextField(getProperty(VNode.JCR_PRIMARYTYPE, String.class));
+			JTextField primaryTypeField = new JTextField(jcrType);
 			primaryTypeField.setEditable(false);
 			primaryTypePanel.add(primaryTypeField);
 		}
@@ -425,25 +423,25 @@ public class NodeDialog extends DialogWrapper {
 		JPanel newPropertyPanel = new JPanel(new GridLayout(1,2));
 		final JTextField jTextField = new JTextField();
 		newPropertyPanel.add(jTextField);
-		final JComboBox addPropertyCombo = new JComboBox(VNode.TYPESTRINGS);
+		final JComboBox addPropertyCombo = new JComboBox(AbstractProperty.TYPESTRINGS);
 		newPropertyPanel.add(addPropertyCombo);
 		final JButton jButton = new JButton("add property");
 		jButton.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent e) {
 				String type = (String) addPropertyCombo.getSelectedItem();
-				if (VNode.BOOLEAN_PREFIX.equals(type)) {
+				if (AbstractProperty.BOOLEAN_PREFIX.equals(type)) {
 					addPropertyPanel(propertiesPanel, jTextField.getText(), false);
-				} else if (VNode.LONG_PREFIX.equals(type)) {
+				} else if (AbstractProperty.LONG_PREFIX.equals(type)) {
 					addPropertyPanel(propertiesPanel, jTextField.getText(), 0L);
-				} else if (VNode.DOUBLE_PREFIX.equals(type)) {
+				} else if (AbstractProperty.DOUBLE_PREFIX.equals(type)) {
 					addPropertyPanel(propertiesPanel, jTextField.getText(), 0.0D);
-				} else if(VNode.DATE_PREFIX.equals(type)){
+				} else if(AbstractProperty.DATE_PREFIX.equals(type)){
                     addPropertyPanel(propertiesPanel, jTextField.getText(), new Date());
-                }  else if ((VNode.LONG_PREFIX + "[]").equals(type)) {
+                }  else if ((AbstractProperty.LONG_PREFIX + "[]").equals(type)) {
 					addPropertyPanel(propertiesPanel, jTextField.getText(), new Long[] {0L});
-				} else if ((VNode.DOUBLE_PREFIX + "[]").equals(type)) {
+				} else if ((AbstractProperty.DOUBLE_PREFIX + "[]").equals(type)) {
 					addPropertyPanel(propertiesPanel, jTextField.getText(), new Double[] {0.0D});
-				} else if ((VNode.BOOLEAN_PREFIX + "[]").equals(type)) {
+				} else if ((AbstractProperty.BOOLEAN_PREFIX + "[]").equals(type)) {
 					addPropertyPanel(propertiesPanel, jTextField.getText(), new Boolean[] {false});
 				} else if ("{String}[]".equals(type)) {
 					addPropertyPanel(propertiesPanel, jTextField.getText(), new String[] {""});
