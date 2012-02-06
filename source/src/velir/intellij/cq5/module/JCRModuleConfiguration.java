@@ -74,6 +74,7 @@ public class JCRModuleConfiguration implements ModuleComponent, PersistentStateC
 		// make sure state is shared between configuration and connection
 		Connection connection = Connection.getInstance(module);
 		connection.setState(state);
+		VNodeDefinition.buildDefinitions(module);
 	}
 
 	public void disposeComponent() {
