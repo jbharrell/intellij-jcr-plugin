@@ -8,6 +8,9 @@ import velir.intellij.cq5.ui.jcr.tree.handlers.JcrTreeSelectionHandler;
 
 import javax.swing.tree.DefaultTreeModel;
 import javax.swing.tree.TreePath;
+import java.util.ArrayList;
+import java.util.Enumeration;
+import java.util.List;
 
 /**
  * Represents a jcr tree in the intellij ui.
@@ -69,5 +72,59 @@ public class JcrTree extends Tree {
 			return jcrLightNode.getPath();
 		}
 		return null;
+	}
+
+	/**
+	 * Will return the expanded children of the provided path.
+	 *
+	 * @param path The start path to look below for expanded nodes.
+	 * @return The expanded nodes.
+	 */
+	public List<JcrTreeNode> getExpandedChildren(TreePath path) {
+		//call our overloaded method
+		return this.getExpandedChildren(path, false);
+	}
+
+	/**
+	 * Will return the expanded children of the provided path.
+	 *
+	 * @param path    The start path to look below for expanded nodes.
+	 * @param descend Whether or not we should recursively look down the tree.
+	 * @return The expanded nodes.
+	 */
+	public List<JcrTreeNode> getExpandedChildren(TreePath path, boolean descend) {
+		//initialize our list to hold our expanded children.
+		List<JcrTreeNode> expandedChildren = new ArrayList<JcrTreeNode>();
+
+		//get our last path component.
+		Object lastNode = path.getLastPathComponent();
+
+		//if our last node is a jcr tree node then go through its children
+		//and find the ones that are expanded
+		if (lastNode instanceof JcrTreeNode) {
+			//cast our last node into our tree node
+			JcrTreeNode treeNode = (JcrTreeNode) lastNode;
+
+			//go through each child and if expanded, add to our list
+			Enumeration children = treeNode.children();
+			while (children.hasMoreElements()) {
+				//get our current child
+				JcrTreeNode child = (JcrTreeNode) children.nextElement();
+
+				//if our child is expanded then add to our list
+				TreePath childPath = child.getTreePath();
+				if (this.isExpanded(childPath)) {
+					expandedChildren.add(child);
+
+					//if we are looking down the tree, then add all expanded nodes for this child
+					if (descend) {
+						expandedChildren.addAll(this.getExpandedChildren(childPath, descend));
+					}
+				}
+			}
+		}
+
+		//return our expanded children
+		return expandedChildren;
 	}
 }

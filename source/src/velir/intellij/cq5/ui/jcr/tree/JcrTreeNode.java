@@ -11,6 +11,8 @@ import javax.jcr.NodeIterator;
 import javax.jcr.RepositoryException;
 import javax.jcr.Session;
 import javax.swing.tree.DefaultMutableTreeNode;
+import javax.swing.tree.TreeNode;
+import javax.swing.tree.TreePath;
 
 /**
  * Represents a jcr tree node in the intellij ui.
@@ -191,5 +193,48 @@ public class JcrTreeNode extends DefaultMutableTreeNode {
 
 		//return if we added nodes.
 		return addedNodes;
+	}
+
+	/**
+	 * Will refresh this item in the tree.
+	 *
+	 * @param descend Whether or not to also populate child node's children.
+	 * @return Whether or not nodes were added to the tree.
+	 */
+	public boolean refresh(boolean descend) {
+		//call our overloaded method without a session
+		return this.refresh(descend, null);
+	}
+
+	/**
+	 * Will refresh this item in the tree.
+	 *
+	 * @param descend Whether or not to also populate child node's children.
+	 * @param session The session to the repository.
+	 * @return Whether or not nodes were added to the tree.
+	 */
+	public boolean refresh(boolean descend, Session session) {
+		//reset our flags so we can begin populating our children again.
+		this.populated = false;
+		this.interim = false;
+
+		//remove our children.
+		this.removeAllChildren();
+
+		//populate our children again
+		return this.populateChildren(descend, session);
+	}
+
+	/**
+	 * Will return our path as a TreePath object.
+	 *
+	 * @return TreePath of our node.
+	 */
+	public TreePath getTreePath() {
+		//get our current path
+		TreeNode[] path = this.getPath();
+
+		//return our tree path
+		return new TreePath(path);
 	}
 }
