@@ -36,7 +36,7 @@ public class JcrTreeExpansionHandler implements TreeExpansionListener {
 			Project project = ProjectManager.getInstance().getDefaultProject();
 
 			//get a session to our repository.
-			Connection connection = Connection.getInstance(project);
+			Connection connection = null; //TODO: make this dependent on module -- Connection.getInstance(project);
 			session = connection.getSession();
 
 			//populate our children and if any were added update our tree.

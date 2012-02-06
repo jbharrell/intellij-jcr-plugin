@@ -134,7 +134,7 @@ public class JcrTreeNode extends DefaultMutableTreeNode {
 				Project project = ProjectManager.getInstance().getDefaultProject();
 
 				//get our session
-				Connection connection = Connection.getInstance(project);
+				Connection connection = null; //TODO: make this dependent on module -- Connection.getInstance(project);
 				session = connection.getSession();
 
 				//set our flag indicating that we created our session

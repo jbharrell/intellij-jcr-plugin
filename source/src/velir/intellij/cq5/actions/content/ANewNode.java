@@ -14,7 +14,7 @@ import velir.intellij.cq5.util.PsiUtils;
 
 import java.io.IOException;
 
-public abstract class ANewNode extends AnAction {
+public abstract class ANewNode extends JCRAction {
 	@Override
 	public void actionPerformed(AnActionEvent anActionEvent) {
 		final Project project = anActionEvent.getData(PlatformDataKeys.PROJECT);
@@ -40,6 +40,15 @@ public abstract class ANewNode extends AnAction {
 				});
 			}
 		}
+	}
+
+	@Override
+	public void update(AnActionEvent e) {
+		final Presentation presentation = e.getPresentation();
+		boolean enabled = isJCREvent(e);
+
+		presentation.setVisible(enabled);
+		presentation.setEnabled(enabled);
 	}
 
 	public abstract VNode getNode();

@@ -4,9 +4,12 @@ import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.ServiceManager;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
+import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleServiceManager;
 import com.intellij.openapi.project.Project;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.jcr2dav.Jcr2davRepositoryFactory;
+import velir.intellij.cq5.module.JCRModuleConfiguration;
 
 import javax.jcr.*;
 import java.util.HashMap;
@@ -15,26 +18,19 @@ import java.util.Map;
 /**
  * Used to create a new connection to the jcr.
  */
-@State(
-		name = "CQ5.Project.Settings",
-		storages = {@Storage(id = "default", file = "$PROJECT_FILE$")}
-)
-public class Connection implements PersistentStateComponent<Connection.State>{
-	public static class State {
-		public String url;
-		public String username;
-		public String password;
-		public String workspace;
-	}
+public class Connection {
 
-
-	private State state;
+	private JCRModuleConfiguration.State state;
 
 	private Connection () {
 	}
 
-	public static Connection getInstance(Project project) {
-		return ServiceManager.getService(project, Connection.class);
+	public static Connection getInstance(Module module) {
+		return ModuleServiceManager.getService(module, Connection.class);
+	}
+
+	public void setState (JCRModuleConfiguration.State state) {
+		this.state = state;
 	}
 
 	/**
@@ -87,13 +83,5 @@ public class Connection implements PersistentStateComponent<Connection.State>{
 
 		//login to our repository and return our session
 		return rep.login(getCredentials(), state.workspace);
-	}
-
-	public State getState() {
-		return state;
-	}
-
-	public void loadState(State state) {
-		this.state = state;
 	}
 }

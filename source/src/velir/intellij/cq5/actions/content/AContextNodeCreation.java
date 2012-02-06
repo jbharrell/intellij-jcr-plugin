@@ -36,7 +36,7 @@ public abstract class AContextNodeCreation extends ANewNode {
 
 		boolean enabled = false;
 
-		if (element instanceof PsiDirectory) {
+		if (isJCREvent(e) && element instanceof PsiDirectory) {
 			PsiDirectory psiDirectory = (PsiDirectory) element;
 			final PsiFile contentFile = psiDirectory.findFile(".content.xml");
 			if (contentFile != null) {

@@ -105,9 +105,9 @@
 	<extensions defaultExtensionNs="com.intellij">
 		<moduleType id="JCR_MODULE" implementationClass="velir.intellij.cq5.module.JCRModuleType" classpathProvider="false"/>
 		<!-- Add your extensions here -->
-		<projectService serviceInterface="velir.intellij.cq5.jcr.Connection"
-		                serviceImplementation="velir.intellij.cq5.jcr.Connection"/>
-		<projectConfigurable implementation="velir.intellij.cq5.config.JcrSettings"/>
+		<moduleService serviceInterface="velir.intellij.cq5.jcr.Connection"
+		               serviceImplementation="velir.intellij.cq5.jcr.Connection"/>
+		<moduleConfigurationEditorProvider implementation="velir.intellij.cq5.module.JCRModuleEditorsProvider"/>
 	</extensions>
 	<module-components>
 		<component>

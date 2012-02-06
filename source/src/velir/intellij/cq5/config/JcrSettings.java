@@ -7,6 +7,7 @@ import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import org.jetbrains.annotations.Nls;
 import velir.intellij.cq5.jcr.Connection;
+import velir.intellij.cq5.module.JCRModuleConfiguration;
 
 import javax.swing.*;
 import java.awt.*;
@@ -17,6 +18,11 @@ public class JcrSettings implements Configurable {
 	private JTextField usernameField;
 	private JTextField passwordField;
 	private JTextField workspaceField;
+	private JCRModuleConfiguration.State state;
+
+	public JcrSettings (JCRModuleConfiguration.State state) {
+		this.state = state;
+	}
 
 	@Nls
 	public String getDisplayName() {
@@ -38,7 +44,7 @@ public class JcrSettings implements Configurable {
 		JPanel urlPanel = new JPanel(new FlowLayout());
 		JLabel urlLabel = new JLabel("JCR url:");
 		urlPanel.add(urlLabel);
-		urlField = new JTextField("(url)");
+		urlField = new JTextField(state.url);
 		urlPanel.add(urlField);
 		jPanel.add(urlPanel);
 
@@ -46,7 +52,7 @@ public class JcrSettings implements Configurable {
 		JPanel usernamePanel = new JPanel(new FlowLayout());
 		JLabel usernameLabel = new JLabel("Username:");
 		usernamePanel.add(usernameLabel);
-		usernameField = new JTextField("(username)");
+		usernameField = new JTextField(state.username);
 		usernamePanel.add(usernameField);
 		jPanel.add(usernamePanel);
 
@@ -54,7 +60,7 @@ public class JcrSettings implements Configurable {
 		JPanel passwordPanel = new JPanel(new FlowLayout());
 		JLabel passwordLabel = new JLabel("Password:");
 		passwordPanel.add(passwordLabel);
-		passwordField = new JTextField("(password)");
+		passwordField = new JTextField(state.password);
 		passwordPanel.add(passwordField);
 		jPanel.add(passwordPanel);
 
@@ -62,7 +68,7 @@ public class JcrSettings implements Configurable {
 		JPanel workspacePanel = new JPanel(new FlowLayout());
 		JLabel workspaceLabel = new JLabel("Workspace:");
 		workspacePanel.add(workspaceLabel);
-		workspaceField = new JTextField("(workspace)");
+		workspaceField = new JTextField(state.workspace);
 		workspacePanel.add(workspaceField);
 		jPanel.add(workspacePanel);
 
@@ -70,13 +76,13 @@ public class JcrSettings implements Configurable {
 	}
 
 	public boolean isModified() {
-		return true;
+		return ! (urlField.getText().equals(state.url)
+				&& usernameField.getText().equals(state.username)
+				&& passwordField.getText().equals(state.password)
+				&& workspaceField.getText().equals(state.workspace));
 	}
 
 	public void apply() throws ConfigurationException {
-		Project project = ProjectManager.getInstance().getDefaultProject();
-		Connection connection = Connection.getInstance(project);
-		Connection.State state = connection.getState();
 		state.url = urlField.getText();
 		state.username = usernameField.getText();
 		state.password = passwordField.getText();
@@ -84,9 +90,6 @@ public class JcrSettings implements Configurable {
 	}
 
 	public void reset() {
-		Project project = ProjectManager.getInstance().getDefaultProject();
-		Connection connection = Connection.getInstance(project);
-		Connection.State state = connection.getState();
 		urlField.setText(state.url);
 		usernameField.setText(state.username);
 		passwordField.setText(state.password);
@@ -96,5 +99,8 @@ public class JcrSettings implements Configurable {
 	public void disposeUIResources() {
 	}
 
+	public JCRModuleConfiguration.State getState () {
+		return state;
+	}
 
 }

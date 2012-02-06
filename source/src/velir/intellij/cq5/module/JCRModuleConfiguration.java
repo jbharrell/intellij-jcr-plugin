@@ -1,10 +1,20 @@
 package velir.intellij.cq5.module;
 
 import com.intellij.openapi.components.PersistentStateComponent;
+import com.intellij.openapi.components.State;
+import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.module.ModuleComponent;
 import com.intellij.openapi.module.Module;
 import org.jetbrains.annotations.NotNull;
+import velir.intellij.cq5.jcr.Connection;
+import velir.intellij.cq5.jcr.model.VNodeDefinition;
 
+@State(
+		name = "JCRModuleConfiguration",
+		storages = {
+				@Storage(id = "default", file="$MODULE_FILE$")
+		}
+)
 public class JCRModuleConfiguration implements ModuleComponent, PersistentStateComponent<JCRModuleConfiguration.State> {
 
 	public static class State {
@@ -24,6 +34,23 @@ public class JCRModuleConfiguration implements ModuleComponent, PersistentStateC
 			password = PASSWORD;
 			workspace = WORKSPACE;
 		}
+
+		public State (State state) {
+			url = state.url;
+			username = state.username;
+			password = state.password;
+			workspace = state.workspace;
+		}
+
+		@Override
+		public boolean equals(Object obj) {
+			if (! (obj instanceof State)) return false;
+			State state = (State) obj;
+			return url.equals(state.url)
+					&& username.equals(state.username)
+					&& password.equals(state.password)
+					&& workspace.equals(state.workspace);
+		}
 	}
 
 	private State state;
@@ -39,8 +66,14 @@ public class JCRModuleConfiguration implements ModuleComponent, PersistentStateC
 		return module.getComponent(JCRModuleConfiguration.class);
 	}
 
+	public void processNewConnectionSettings () {
+		VNodeDefinition.buildDefinitions(module);
+	}
+
 	public void initComponent() {
-		// TODO: insert component initialization logic here
+		// make sure state is shared between configuration and connection
+		Connection connection = Connection.getInstance(module);
+		connection.setState(state);
 	}
 
 	public void disposeComponent() {
@@ -73,5 +106,10 @@ public class JCRModuleConfiguration implements ModuleComponent, PersistentStateC
 		this.state = state;
 	}
 
-
+	/**
+	 * resets to default settings
+	 */
+	public void reset () {
+		state = new State();
+	}
 }
