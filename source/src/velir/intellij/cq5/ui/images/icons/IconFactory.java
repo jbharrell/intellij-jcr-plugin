@@ -23,7 +23,7 @@ public class IconFactory {
 		}
 
 		//get our icon stream for our icon.
-		InputStream iconStream = IconFactory.class.getResourceAsStream(path);
+		InputStream iconStream = IconFactory.class.getResourceAsStream(path.toLowerCase());
 
 		//try to pull out our icon from our icon stream
 		Icon icon = null;
