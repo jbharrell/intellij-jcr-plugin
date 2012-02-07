@@ -161,7 +161,7 @@ public class VNodeDefinition {
 		if (CQ_COMPONENT.equals(name)) {
 			vNodeDefinition.properties.put(ALLOWED_PARENTS, new VPropertyDefinitionI() {
 				public Object getDefaultValue() {
-					return "*/parsys";
+					return new String[] {"*/parsys"};
 				}
 			});
 			vNodeDefinition.properties.put(COMPONENT_GROUP, new VPropertyDefinitionI() {
@@ -186,7 +186,7 @@ public class VNodeDefinition {
 		else if (CQ_TEMPLATE.equals(name)) {
 			vNodeDefinition.properties.put("allowedPaths", new VPropertyDefinitionI() {
 				public Object getDefaultValue() {
-					return "/content(/.*)?";
+					return new String[] {"/content(/.*)?"};
 				}
 			});
 			vNodeDefinition.childSuggestions.put(JCR_CONTENT, CQ_PAGECONTENT);
