@@ -13,8 +13,31 @@ import java.util.regex.Pattern;
  */
 public class XMLProperty extends AbstractProperty {
 
-    public XMLProperty(String name, Object value){
-        super(name, value);
+    public XMLProperty(String name, Object value, String type){
+        super(name, value, type);
+    }
+
+    private static String findType(String valueStr){
+        String retType = STRING_PREFIX;
+        if (valueStr.startsWith(BOOLEAN_PREFIX + "[")) {
+            retType = BOOLEAN_ARRAY_PREFIX;
+        } else if (valueStr.startsWith(BOOLEAN_PREFIX)) {
+            retType = BOOLEAN_PREFIX;
+        } else if (valueStr.startsWith(DOUBLE_PREFIX + "[")) {
+            retType = DOUBLE_ARRAY_PREFIX;
+        } else if (valueStr.startsWith(DOUBLE_PREFIX)) {
+            retType = DOUBLE_PREFIX;
+        } else if (valueStr.startsWith(LONG_PREFIX + "[")) {
+            retType = LONG_ARRAY_PREFIX;
+        } else if (valueStr.startsWith(LONG_PREFIX)) {
+            retType = LONG_PREFIX;
+        } else if(valueStr.startsWith(DATE_PREFIX)){
+            retType = DATE_PREFIX;
+        }
+        else if (valueStr.startsWith("[")) {
+            retType = STRING_ARRAY_PREFIX;
+        }
+        return retType;
     }
 
     private static Object findValue(String valueStr){
@@ -150,6 +173,7 @@ public class XMLProperty extends AbstractProperty {
 
     public static VProperty makeFromValueStr(String name, String valueStr){
         Object val = findValue(valueStr);
-        return new XMLProperty(name, val);
+        String type = findType(valueStr);
+        return new XMLProperty(name, val, type);
     }
 }

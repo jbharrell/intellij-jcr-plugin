@@ -96,11 +96,11 @@ public class VNodeDefinition {
 		Map<String,VProperty> propertiesMap = new HashMap<String, VProperty>();
 		for (Map.Entry<String, VPropertyDefinitionI> entry : properties.entrySet()) {
             //TODO: Replace with VProperty Factory
-            VProperty newProp = new XMLProperty(name, entry.getValue().getDefaultValue() );
+            VProperty newProp = new XMLProperty(name, entry.getValue().getDefaultValue(), AbstractProperty.STRING_PREFIX );
 			propertiesMap.put(entry.getKey(), newProp);
 		}
 		if (includePrimaryType) {
-            propertiesMap.put(AbstractProperty.JCR_PRIMARYTYPE, new XMLProperty(AbstractProperty.JCR_PRIMARYTYPE, name));
+            propertiesMap.put(AbstractProperty.JCR_PRIMARYTYPE, new XMLProperty(AbstractProperty.JCR_PRIMARYTYPE, name, AbstractProperty.STRING_PREFIX));
         }
 
 		// also get supertype properties

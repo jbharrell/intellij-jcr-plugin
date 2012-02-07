@@ -62,7 +62,8 @@ public class NodeDialog extends DialogWrapper {
 	}
 
 	private void setProperty (String name, Object o) {
-        XMLProperty prop = new XMLProperty(name, o);
+        //TODO: Find the object's real type
+        XMLProperty prop = new XMLProperty(name, o, AbstractProperty.STRING_PREFIX);
 		vNode.setProperty(name, prop);
 	}
 

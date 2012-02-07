@@ -46,7 +46,7 @@ public class VNode {
 			properties = new HashMap<String, VProperty>();
 		}
         //TODO: Replace with VProperty factory
-		properties.put(AbstractProperty.JCR_PRIMARYTYPE, new XMLProperty(AbstractProperty.JCR_PRIMARYTYPE, type));
+		properties.put(AbstractProperty.JCR_PRIMARYTYPE, new XMLProperty(AbstractProperty.JCR_PRIMARYTYPE, type, AbstractProperty.STRING_PREFIX));
 		canChangeType = true;
 	}
 
