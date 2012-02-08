@@ -19,6 +19,7 @@ import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.content.ContentManager;
 import com.intellij.ui.table.JBTable;
 import org.jdom.JDOMException;
+import org.jetbrains.annotations.Nullable;
 import velir.intellij.cq5.jcr.model.VNode;
 import velir.intellij.cq5.util.PsiUtils;
 
@@ -83,7 +84,7 @@ public class PropertyToolWindow implements ToolWindowFactory {
         }
     }
 
-    private void setFile(VirtualFile file) {
+    private void setFile(@Nullable VirtualFile file) {
         if(myFile != file){
             myFile = file;
             ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
@@ -123,6 +124,9 @@ public class PropertyToolWindow implements ToolWindowFactory {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            } else{
+                //User selected a file that doesn't have CQ properties, clear the window
+                setFile(null);
             }
         }
     }
