@@ -112,7 +112,7 @@
 	<module-components>
 		<component>
 			<implementation-class>velir.intellij.cq5.module.JCRModuleConfiguration</implementation-class>
-			<option name="type" value="PLUGIN_MODULE"/>
+			<option name="type" value="JCR_MODULE"/>
 		</component>
 	</module-components>
 </idea-plugin>

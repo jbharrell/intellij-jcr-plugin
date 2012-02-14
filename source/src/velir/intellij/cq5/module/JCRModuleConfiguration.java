@@ -5,6 +5,7 @@ import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.module.ModuleComponent;
 import com.intellij.openapi.module.Module;
+import com.intellij.openapi.module.ModuleServiceManager;
 import org.jetbrains.annotations.NotNull;
 import velir.intellij.cq5.jcr.Connection;
 import velir.intellij.cq5.jcr.model.VNodeDefinition;
@@ -62,8 +63,13 @@ public class JCRModuleConfiguration implements ModuleComponent, PersistentStateC
 		state = new State();
 	}
 
+	public JCRModuleConfiguration(Module module, State state) {
+		this.module = module;
+		this.state = state;
+	}
+
 	public static JCRModuleConfiguration getInstance(Module module) {
-		return module.getComponent(JCRModuleConfiguration.class);
+		return ModuleServiceManager.getService(module, JCRModuleConfiguration.class);
 	}
 
 	public void processNewConnectionSettings () {
@@ -74,7 +80,7 @@ public class JCRModuleConfiguration implements ModuleComponent, PersistentStateC
 		// make sure state is shared between configuration and connection
 		Connection connection = Connection.getInstance(module);
 		connection.setState(state);
-		VNodeDefinition.buildDefinitions(module);
+		processNewConnectionSettings();
 	}
 
 	public void disposeComponent() {
