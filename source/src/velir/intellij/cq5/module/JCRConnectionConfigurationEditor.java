@@ -17,7 +17,6 @@ public class JCRConnectionConfigurationEditor implements ModuleConfigurationEdit
 
 	public JCRConnectionConfigurationEditor(ModuleConfigurationState state) {
 		module = state.getRootModel().getModule();
-		JCRModuleConfiguration something = module.getComponent(JCRModuleConfiguration.class);
 		jcrModuleConfiguration = JCRModuleConfiguration.getInstance(module);
 		jcrSettings = new JcrSettings(jcrModuleConfiguration.getState());
 	}
@@ -55,6 +54,7 @@ public class JCRConnectionConfigurationEditor implements ModuleConfigurationEdit
 
 	public void apply() throws ConfigurationException {
 		jcrSettings.apply();
+		jcrModuleConfiguration.loadState(jcrSettings.getState());
 		jcrModuleConfiguration.processNewConnectionSettings();
 	}
 

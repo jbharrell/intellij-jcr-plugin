@@ -5,6 +5,7 @@ import com.intellij.ide.util.projectWizard.ProjectWizardStepFactory;
 import com.intellij.ide.util.projectWizard.WizardContext;
 import com.intellij.openapi.module.ModuleType;
 import com.intellij.openapi.module.ModuleTypeManager;
+import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider;
 import com.intellij.util.ArrayUtil;
 import org.jetbrains.annotations.NonNls;
@@ -60,7 +61,11 @@ public class JCRModuleType extends ModuleType<JCRModuleBuilder> {
 
 			@Override
 			public void updateDataModel() {
-				//TODO: implement
+				try {
+					jcrSettings.apply();
+				} catch (ConfigurationException ce) {
+
+				}
 			}
 		};
 	}
