@@ -19,6 +19,7 @@ import com.intellij.ui.content.ContentFactory;
 import com.intellij.ui.content.ContentManager;
 import com.intellij.ui.table.JBTable;
 import org.jdom.JDOMException;
+import org.jetbrains.annotations.Nullable;
 import velir.intellij.cq5.jcr.model.VNode;
 import velir.intellij.cq5.util.PsiUtils;
 
@@ -64,7 +65,6 @@ public class PropertyToolWindow implements ToolWindowFactory {
         });
     }
 
-    //TODO: Add listener to project window for selecting new folder or content.xml file
     private void checkUpdate() {
         if (myProject.isDisposed()) return;
 
@@ -84,10 +84,21 @@ public class PropertyToolWindow implements ToolWindowFactory {
         }
     }
 
-    private void setFile(VirtualFile file) {
-        if(null != file && myFile != file){
+    private void setFile(@Nullable VirtualFile file) {
+        if(myFile != file){
             myFile = file;
-            if(file.isDirectory()){
+            ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
+            ContentManager cnt = toolWindow.getContentManager();
+            if(null == file){
+                //If the user selects something that isn't a node, clear the table
+                JScrollPane scrollPane = new JBScrollPane();
+
+                Content content = contentFactory.createContent(scrollPane, "", false);
+                cnt.removeAllContents(true);
+                cnt.addContent(content);
+                myToolWindowContent = scrollPane;
+            }
+            else if(file.isDirectory()){
                 VirtualFile child = file.findChild(PsiUtils.CONTENT_XML);
                 setFile(child);
             } else if(PsiUtils.CONTENT_XML.equals(file.getName())){
@@ -96,13 +107,12 @@ public class PropertyToolWindow implements ToolWindowFactory {
                     String name = PsiUtils.unmungeNamespace(psiFile.getContainingDirectory().getName());
 
                     VNode vNode = VNode.makeVNode(file.getInputStream(), name);
-                    ContentManager cnt = toolWindow.getContentManager();
+
                     cnt.removeAllContents(true);
 
                     NodeTableModel model = new NodeTableModel(vNode);
                     propertyTable = new JBTable(model);
 
-                    ContentFactory contentFactory = ContentFactory.SERVICE.getInstance();
                     JScrollPane scrollPane = new JBScrollPane(propertyTable);
                     propertyTable.setFillsViewportHeight(true);
                     Content content = contentFactory.createContent(scrollPane, "", false);
@@ -114,6 +124,9 @@ public class PropertyToolWindow implements ToolWindowFactory {
                 } catch (IOException e) {
                     e.printStackTrace();
                 }
+            } else{
+                //User selected a file that doesn't have CQ properties, clear the window
+                setFile(null);
             }
         }
     }
