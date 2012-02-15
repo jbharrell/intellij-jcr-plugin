@@ -39,8 +39,6 @@ public class JcrViewComponent extends AbstractProjectComponent {
 	@Override
 	public void initComponent() {
 		super.initComponent();
-
-		VNodeDefinition.buildDefinitions(myProject);
 	}
 
 	private void setupToolWindow() {
@@ -66,7 +64,7 @@ public class JcrViewComponent extends AbstractProjectComponent {
 		//try to get our root node from crx.
 		try {
 			//get our session
-			Connection connection = Connection.getInstance(myProject);
+			Connection connection = null; //TODO: make module based rather than = Connection.getInstance(myProject);
 			session = connection.getSession();
 
 			//pull out our root node.

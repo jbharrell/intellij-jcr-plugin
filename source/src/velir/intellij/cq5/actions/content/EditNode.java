@@ -20,7 +20,7 @@ import velir.intellij.cq5.util.PsiUtils;
 
 import java.io.IOException;
 
-public class EditNode extends AnAction {
+public class EditNode extends JCRAction {
 	private static final Logger log = LoggerFactory.getLogger(EditNode.class);
 
 
@@ -51,7 +51,7 @@ public class EditNode extends AnAction {
 
 		final PsiElement element = (PsiElement)dataContext.getData(LangDataKeys.PSI_ELEMENT.getName());
 
-		boolean enabled = getContentFile(element) != null;
+		boolean enabled = isJCREvent(e) && getContentFile(element) != null;
 
 		presentation.setVisible(enabled);
 		presentation.setEnabled(enabled);

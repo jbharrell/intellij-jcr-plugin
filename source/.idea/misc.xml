@@ -1,5 +1,11 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
+  <component name="CQ5.Project.Settings">
+    <option name="url" value="http://localhost:4502/crx/server" />
+    <option name="username" value="admin" />
+    <option name="password" value="admin" />
+    <option name="workspace" value="crx.default" />
+  </component>
   <component name="DependencyValidationManager">
     <option name="SKIP_IMPORT_STATEMENTS" value="false" />
   </component>

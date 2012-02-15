@@ -18,7 +18,7 @@ import velir.intellij.cq5.util.PsiUtils;
 
 import java.io.IOException;
 
-public class UnpackXml extends AnAction {
+public class UnpackXml extends JCRAction {
 
 	@Override
 	public void update(AnActionEvent e) {
@@ -29,7 +29,7 @@ public class UnpackXml extends AnAction {
 
 		boolean enabled = false;
 
-		if (element instanceof PsiFile) {
+		if (isJCREvent(e) && element instanceof PsiFile) {
 			PsiFile psiFile = (PsiFile) element;
 			String name = psiFile.getName();
 			// consider .content.xml already unpacked, so disable action for it
