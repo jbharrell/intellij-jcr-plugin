@@ -1,7 +1,11 @@
 package velir.intellij.cq5.ui.jcr.tree.handlers;
 
+import com.intellij.facet.ProjectFacetManager;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
+import velir.intellij.cq5.facet.JCRFacet;
+import velir.intellij.cq5.facet.JCRFacetType;
 import velir.intellij.cq5.ui.jcr.tree.JcrTree;
 import velir.intellij.cq5.ui.jcr.tree.JcrTreeNode;
 
@@ -16,6 +20,8 @@ import javax.swing.tree.TreePath;
  * Class used to handle tree expansion and collapse events.
  */
 public class JcrTreeExpansionHandler implements TreeExpansionListener {
+	private static final Logger log = com.intellij.openapi.diagnostic.Logger.getInstance(JcrTreeExpansionHandler.class);
+
 	/**
 	 * Event that will fire when the tree is expanded.
 	 *
@@ -32,11 +38,12 @@ public class JcrTreeExpansionHandler implements TreeExpansionListener {
 		Session session = null;
 		try {
 			//get our project
-			Project project = ProjectManager.getInstance().getDefaultProject();
+			// TODO: correct this! it's really hacky, but should (may) work
+			Project project = ProjectManager.getInstance().getOpenProjects()[0];
 
 			//get a session to our repository.
-			//TODO: get session through JCRConfiguration
-			session = null;
+			JCRFacet jcrFacet = ProjectFacetManager.getInstance(project).getFacets(JCRFacetType.JCR_TYPE_ID).get(0);
+			session = jcrFacet.getJcrConfiguration().getSession();
 
 			//populate our children and if any were added update our tree.
 			if (node.populateChildren(true, session)) {
@@ -46,6 +53,8 @@ public class JcrTreeExpansionHandler implements TreeExpansionListener {
 				//update our node structure.
 				((DefaultTreeModel) tree.getModel()).nodeStructureChanged(node);
 			}
+		} catch (RepositoryException re ) {
+			log.error("could not get JCR session", re);
 		} finally {
 			if (session != null) {
 				session.logout();

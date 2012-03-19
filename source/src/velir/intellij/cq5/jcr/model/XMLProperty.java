@@ -2,6 +2,7 @@ package velir.intellij.cq5.jcr.model;
 
 import com.day.cq.commons.date.DateUtil;
 import com.day.cq.commons.date.InvalidDateException;
+import com.intellij.openapi.diagnostic.Logger;
 import org.apache.jackrabbit.value.*;
 
 import java.util.Calendar;
@@ -12,6 +13,7 @@ import java.util.regex.Pattern;
  * @author krasmussen
  */
 public class XMLProperty extends AbstractProperty {
+	private static final Logger log = com.intellij.openapi.diagnostic.Logger.getInstance(XMLProperty.class);
 
     public XMLProperty(String name, Object value, String type){
         super(name, value, type);
@@ -91,7 +93,7 @@ public class XMLProperty extends AbstractProperty {
                 Calendar cal = DateUtil.parseISO8601(dateStr);
                 retVal = cal.getTime();
             } catch (InvalidDateException e){
-                //TODO: Log error or set a default value
+	            log.warn("Could not parse date", e);
                 retVal = new Date();
             }
         }

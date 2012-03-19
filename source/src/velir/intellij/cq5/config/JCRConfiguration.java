@@ -134,11 +134,11 @@ public class JCRConfiguration implements FacetConfiguration, PersistentStateComp
 	}
 
 	public void readExternal(Element element) throws InvalidDataException {
-		//TODO: implement
+		//deprecated, so will not implement
 	}
 
 	public void writeExternal(Element element) throws WriteExternalException {
-		//TODO: implement
+		//deprecated, so will not implement
 	}
 
 	/**

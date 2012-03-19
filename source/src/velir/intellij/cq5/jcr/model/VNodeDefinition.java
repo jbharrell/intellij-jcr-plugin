@@ -127,7 +127,6 @@ public class VNodeDefinition {
 		return suggestions;
 	}
 
-	//TODO: now that this plugin is module-oriented, we probably should create a definition factory based on a module
 	public static void buildDefinitions (Session session) {
 		log.info("started building node definitions");
 		String nodeName = "";
