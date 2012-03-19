@@ -3,7 +3,6 @@ package velir.intellij.cq5.ui.jcr.tree;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import org.apache.commons.lang.NullArgumentException;
-import velir.intellij.cq5.jcr.Connection;
 import velir.intellij.cq5.jcr.LightNode;
 
 import javax.jcr.Node;
@@ -136,8 +135,8 @@ public class JcrTreeNode extends DefaultMutableTreeNode {
 				Project project = ProjectManager.getInstance().getDefaultProject();
 
 				//get our session
-				Connection connection = null; //TODO: make this dependent on module -- Connection.getInstance(project);
-				session = connection.getSession();
+				//TODO: get session through JCRConfiguration
+				session = null;
 
 				//set our flag indicating that we created our session
 				sessionCreated = true;

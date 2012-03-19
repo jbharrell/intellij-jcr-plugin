@@ -1,9 +1,6 @@
 package velir.intellij.cq5.jcr.model;
 
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.project.Project;
-import velir.intellij.cq5.jcr.Connection;
 
 import javax.jcr.*;
 import java.util.*;
@@ -131,14 +128,11 @@ public class VNodeDefinition {
 	}
 
 	//TODO: now that this plugin is module-oriented, we probably should create a definition factory based on a module
-	public static void buildDefinitions (Module module) {
+	public static void buildDefinitions (Session session) {
 		log.info("started building node definitions");
-		Session session = null;
 		String nodeName = "";
 		try {
 			allNodes = new HashMap<String, VNodeDefinition>();
-			Connection connection = Connection.getInstance(module);
-			session = connection.getSession();
 			Node rootNode = session.getNode("/jcr:system/jcr:nodeTypes");
 			NodeIterator nodeIterator = rootNode.getNodes();
 			while (nodeIterator.hasNext()) {
@@ -200,7 +194,7 @@ public class VNodeDefinition {
 	}
 
 	public static boolean hasDefinitions () {
-		return ! allNodes.isEmpty();
+		return allNodes != null && ! allNodes.isEmpty();
 	}
 
 	// only include non-mixin types

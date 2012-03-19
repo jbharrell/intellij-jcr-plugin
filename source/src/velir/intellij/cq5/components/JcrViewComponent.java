@@ -8,9 +8,7 @@ import com.intellij.openapi.wm.ToolWindowManager;
 import com.intellij.ui.components.JBScrollPane;
 import com.intellij.ui.content.Content;
 import com.intellij.ui.content.ContentFactory;
-import velir.intellij.cq5.jcr.Connection;
 import velir.intellij.cq5.jcr.LightNode;
-import velir.intellij.cq5.jcr.model.VNodeDefinition;
 import velir.intellij.cq5.ui.jcr.tree.JcrTree;
 
 import javax.jcr.Node;
@@ -64,8 +62,8 @@ public class JcrViewComponent extends AbstractProjectComponent {
 		//try to get our root node from crx.
 		try {
 			//get our session
-			Connection connection = null; //TODO: make module based rather than = Connection.getInstance(myProject);
-			session = connection.getSession();
+			//TODO: get JCRConfiguration to get session
+			session = null;
 
 			//pull out our root node.
 			Node jcrRootNode = session.getRootNode();

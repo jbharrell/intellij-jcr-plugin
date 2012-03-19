@@ -103,17 +103,7 @@
 	</actions>
 
 	<extensions defaultExtensionNs="com.intellij">
-		<moduleType id="JCR_MODULE" implementationClass="velir.intellij.cq5.module.JCRModuleType" classpathProvider="false"/>
-		<!-- Add your extensions here -->
-		<moduleService serviceInterface="velir.intellij.cq5.jcr.Connection"
-		               serviceImplementation="velir.intellij.cq5.jcr.Connection"/>
-		<moduleConfigurationEditorProvider implementation="velir.intellij.cq5.module.JCRModuleEditorsProvider"/>
+		<facetType implementation="velir.intellij.cq5.facet.JCRFacetType"/>
 		<toolWindow id="CQ Node Properties" anchor="bottom" factoryClass="velir.intellij.cq5.ui.window.PropertyToolWindow" />
 	</extensions>
-	<module-components>
-		<component>
-			<implementation-class>velir.intellij.cq5.module.JCRModuleConfiguration</implementation-class>
-			<option name="type" value="JCR_MODULE"/>
-		</component>
-	</module-components>
 </idea-plugin>

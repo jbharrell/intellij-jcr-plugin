@@ -2,12 +2,8 @@ package velir.intellij.cq5.config;
 
 import com.intellij.openapi.options.Configurable;
 import com.intellij.openapi.options.ConfigurationException;
-import com.intellij.openapi.project.Project;
-import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import org.jetbrains.annotations.Nls;
-import velir.intellij.cq5.jcr.Connection;
-import velir.intellij.cq5.module.JCRModuleConfiguration;
 
 import javax.swing.*;
 import java.awt.*;
@@ -18,10 +14,10 @@ public class JcrSettings implements Configurable {
 	private JTextField usernameField;
 	private JTextField passwordField;
 	private JTextField workspaceField;
-	private JCRModuleConfiguration.State state;
+	private JCRConfiguration.State state;
 
-	public JcrSettings (JCRModuleConfiguration.State state) {
-		this.state = state;
+	public JcrSettings (JCRConfiguration.State state) {
+		this.state = new JCRConfiguration.State(state);
 	}
 
 	@Nls
@@ -82,7 +78,7 @@ public class JcrSettings implements Configurable {
 				&& workspaceField.getText().equals(state.workspace));
 	}
 
-	public void apply() throws ConfigurationException {
+	public void apply() {
 		state.url = urlField.getText();
 		state.username = usernameField.getText();
 		state.password = passwordField.getText();
@@ -99,8 +95,16 @@ public class JcrSettings implements Configurable {
 	public void disposeUIResources() {
 	}
 
-	public JCRModuleConfiguration.State getState () {
+	// note that his updates the state with the control values
+	public JCRConfiguration.State getState () {
+		apply();
 		return state;
+	}
+
+	// note that this updates the control values to the new state values
+	public void setState (JCRConfiguration.State state) {
+		this.state = state;
+		reset();
 	}
 
 }

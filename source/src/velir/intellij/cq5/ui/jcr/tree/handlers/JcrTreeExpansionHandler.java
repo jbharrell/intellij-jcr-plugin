@@ -2,7 +2,6 @@ package velir.intellij.cq5.ui.jcr.tree.handlers;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
-import velir.intellij.cq5.jcr.Connection;
 import velir.intellij.cq5.ui.jcr.tree.JcrTree;
 import velir.intellij.cq5.ui.jcr.tree.JcrTreeNode;
 
@@ -36,8 +35,8 @@ public class JcrTreeExpansionHandler implements TreeExpansionListener {
 			Project project = ProjectManager.getInstance().getDefaultProject();
 
 			//get a session to our repository.
-			Connection connection = null; //TODO: make this dependent on module -- Connection.getInstance(project);
-			session = connection.getSession();
+			//TODO: get session through JCRConfiguration
+			session = null;
 
 			//populate our children and if any were added update our tree.
 			if (node.populateChildren(true, session)) {
@@ -47,8 +46,6 @@ public class JcrTreeExpansionHandler implements TreeExpansionListener {
 				//update our node structure.
 				((DefaultTreeModel) tree.getModel()).nodeStructureChanged(node);
 			}
-		} catch (RepositoryException rex) {
-			//TODO: Log exception.
 		} finally {
 			if (session != null) {
 				session.logout();
