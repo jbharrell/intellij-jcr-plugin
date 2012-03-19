@@ -5,6 +5,7 @@ import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import org.apache.commons.lang.NullArgumentException;
+import velir.intellij.cq5.config.JCRConfiguration;
 import velir.intellij.cq5.facet.JCRFacet;
 import velir.intellij.cq5.facet.JCRFacetType;
 import velir.intellij.cq5.jcr.LightNode;
@@ -137,13 +138,9 @@ public class JcrTreeNode extends DefaultMutableTreeNode {
 		try {
 			//if we weren't provided a session then get a session
 			if (session == null) {
-				//get our project
-				// TODO: correct this! it's really hacky, but should (may) work
-				Project project = ProjectManager.getInstance().getOpenProjects()[0];
 
 				//get our session
-				JCRFacet jcrFacet = ProjectFacetManager.getInstance(project).getFacets(JCRFacetType.JCR_TYPE_ID).get(0);
-				session = jcrFacet.getJcrConfiguration().getSession();
+				session = JCRConfiguration.getAConfiguration().getSession();
 
 				//set our flag indicating that we created our session
 				sessionCreated = true;

@@ -4,6 +4,7 @@ import com.intellij.facet.ProjectFacetManager;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
+import velir.intellij.cq5.config.JCRConfiguration;
 import velir.intellij.cq5.facet.JCRFacet;
 import velir.intellij.cq5.facet.JCRFacetType;
 import velir.intellij.cq5.ui.jcr.tree.JcrTree;
@@ -37,13 +38,7 @@ public class JcrTreeExpansionHandler implements TreeExpansionListener {
 		//declare our session.
 		Session session = null;
 		try {
-			//get our project
-			// TODO: correct this! it's really hacky, but should (may) work
-			Project project = ProjectManager.getInstance().getOpenProjects()[0];
-
-			//get a session to our repository.
-			JCRFacet jcrFacet = ProjectFacetManager.getInstance(project).getFacets(JCRFacetType.JCR_TYPE_ID).get(0);
-			session = jcrFacet.getJcrConfiguration().getSession();
+			session = JCRConfiguration.getAConfiguration().getSession();
 
 			//populate our children and if any were added update our tree.
 			if (node.populateChildren(true, session)) {

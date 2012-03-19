@@ -1,6 +1,7 @@
 package velir.intellij.cq5.config;
 
 import com.intellij.facet.FacetConfiguration;
+import com.intellij.facet.ProjectFacetManager;
 import com.intellij.facet.ui.FacetEditorContext;
 import com.intellij.facet.ui.FacetEditorTab;
 import com.intellij.facet.ui.FacetValidatorsManager;
@@ -10,6 +11,8 @@ import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.module.Module;
 import com.intellij.openapi.module.ModuleServiceManager;
+import com.intellij.openapi.project.Project;
+import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.WriteExternalException;
 import org.apache.jackrabbit.commons.JcrUtils;
@@ -17,13 +20,15 @@ import org.apache.jackrabbit.jcr2dav.Jcr2davRepositoryFactory;
 import org.jdom.Element;
 import org.jetbrains.annotations.Nls;
 import org.jetbrains.annotations.NotNull;
+import velir.intellij.cq5.facet.JCRFacet;
+import velir.intellij.cq5.facet.JCRFacetType;
 import velir.intellij.cq5.jcr.model.VNodeDefinition;
 
 import javax.jcr.*;
 import javax.swing.*;
-import java.awt.*;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.List;
 
 @State(
 		name = "JCRConfiguration",
@@ -80,8 +85,19 @@ public class JCRConfiguration implements FacetConfiguration, PersistentStateComp
 		this.state = state;
 	}
 
-	public static JCRConfiguration getInstance(Module module) {
-		return ModuleServiceManager.getService(module, JCRConfiguration.class);
+	/**
+	 * gets the first configuration it can find, from any facet from any open project
+	 */
+	public static JCRConfiguration getAConfiguration () {
+
+		JCRFacet jcrFacet = null;
+		for (Project project : ProjectManager.getInstance().getOpenProjects()) {
+			List<JCRFacet> facetList = ProjectFacetManager.getInstance(project).getFacets(JCRFacetType.JCR_TYPE_ID);
+			if (facetList.size() > 0) return facetList.get(0).getJcrConfiguration();
+		}
+
+		// could not find a JCRFacet in any open projects
+		return null;
 	}
 
 	public void processNewConnectionSettings () {
