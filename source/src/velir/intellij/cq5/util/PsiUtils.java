@@ -1,6 +1,5 @@
 package velir.intellij.cq5.util;
 
-import com.intellij.openapi.util.JDOMUtil;
 import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
@@ -28,7 +27,7 @@ public class PsiUtils {
 		VirtualFile virtualFile = psiFile.getVirtualFile();
 		OutputStream outputStream = virtualFile.getOutputStream(vNode);
 		Document document = new Document(vNode.getElement());
-		JDOMUtil.writeDocument(document, outputStream, "\n");
+		(new NodeXMLOutputter()).output(document, outputStream);
 		outputStream.close();
 	}
 
