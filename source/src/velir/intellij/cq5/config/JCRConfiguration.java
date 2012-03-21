@@ -9,17 +9,15 @@ import com.intellij.openapi.components.PersistentStateComponent;
 import com.intellij.openapi.components.State;
 import com.intellij.openapi.components.Storage;
 import com.intellij.openapi.diagnostic.Logger;
-import com.intellij.openapi.module.Module;
-import com.intellij.openapi.module.ModuleServiceManager;
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.project.ProjectManager;
 import com.intellij.openapi.util.InvalidDataException;
 import com.intellij.openapi.util.WriteExternalException;
+import com.intellij.util.xmlb.annotations.Transient;
 import org.apache.jackrabbit.commons.JcrUtils;
 import org.apache.jackrabbit.jcr2dav.Jcr2davRepositoryFactory;
 import org.jdom.Element;
 import org.jetbrains.annotations.Nls;
-import org.jetbrains.annotations.NotNull;
 import velir.intellij.cq5.facet.JCRFacet;
 import velir.intellij.cq5.facet.JCRFacetType;
 import velir.intellij.cq5.jcr.model.VNodeDefinition;
@@ -27,6 +25,7 @@ import velir.intellij.cq5.jcr.model.VNodeDefinition;
 import javax.jcr.*;
 import javax.swing.*;
 import java.util.HashMap;
+import java.util.LinkedList;
 import java.util.Map;
 import java.util.List;
 
@@ -49,12 +48,16 @@ public class JCRConfiguration implements FacetConfiguration, PersistentStateComp
 		public String username;
 		public String password;
 		public String workspace;
+		public List<String> fileSystemMountPoints;
+		public List<String> jcrMountPoints;
 
 		public State () {
 			url = REPOSITORY_URL;
 			username = USERNAME;
 			password = PASSWORD;
 			workspace = WORKSPACE;
+			fileSystemMountPoints = new LinkedList<String>();
+			jcrMountPoints = new LinkedList<String>();
 		}
 
 		public State (State state) {
@@ -62,16 +65,52 @@ public class JCRConfiguration implements FacetConfiguration, PersistentStateComp
 			username = state.username;
 			password = state.password;
 			workspace = state.workspace;
+			setMountPoints(state.getMountPoints());
 		}
 
 		@Override
 		public boolean equals(Object obj) {
 			if (! (obj instanceof State)) return false;
 			State state = (State) obj;
-			return url.equals(state.url)
+
+			// do simple properties
+			boolean propsEqual = url.equals(state.url)
 					&& username.equals(state.username)
 					&& password.equals(state.password)
 					&& workspace.equals(state.workspace);
+
+			// get all mount points and compare them
+			List<JCRMountPoint> myMountPoints = getMountPoints();
+			List<JCRMountPoint> theirMountPoints = state.getMountPoints();
+			if (myMountPoints.size() != theirMountPoints.size()) return false;
+			for (int i = 0; i < myMountPoints.size(); i++) {
+				propsEqual = propsEqual && myMountPoints.get(i).equals(theirMountPoints.get(i));
+			}
+
+			return propsEqual;
+		}
+
+		@Transient
+		public List<JCRMountPoint> getMountPoints() {
+			List<JCRMountPoint> mountPoints = new LinkedList<JCRMountPoint>();
+			for (int i = 0; i < fileSystemMountPoints.size(); i++) {
+				mountPoints.add(new JCRMountPoint(fileSystemMountPoints.get(i), jcrMountPoints.get(i)));
+			}
+			return mountPoints;
+		}
+
+		@Transient
+		public void setMountPoints (List<JCRMountPoint> mountPoints) {
+			fileSystemMountPoints = new LinkedList<String>();
+			jcrMountPoints = new LinkedList<String>();
+			for (JCRMountPoint jcrMountPoint : mountPoints) {
+				fileSystemMountPoints.add(jcrMountPoint.getFileSystemMountPoint());
+				jcrMountPoints.add(jcrMountPoint.getJcrNode());
+			}
+		}
+
+		public void setConnectionSettings (State state) {
+
 		}
 	}
 
@@ -119,7 +158,7 @@ public class JCRConfiguration implements FacetConfiguration, PersistentStateComp
 	public FacetEditorTab[] createEditorTabs(FacetEditorContext facetEditorContext, FacetValidatorsManager facetValidatorsManager) {
 		return new FacetEditorTab[] {
 			new FacetEditorTab() {
-				JcrSettings jcrSettings = new JcrSettings(state);
+				JCRConnectionSettings JCRConnectionSettings = new JCRConnectionSettings(state);
 
 				@Nls
 				public String getDisplayName() {
@@ -127,23 +166,55 @@ public class JCRConfiguration implements FacetConfiguration, PersistentStateComp
 				}
 
 				public JComponent createComponent() {
-					return jcrSettings.createComponent();
+					return JCRConnectionSettings.createComponent();
 				}
 
 				public boolean isModified() {
-					return jcrSettings.isModified();
+					return JCRConnectionSettings.isModified();
 				}
 
 				public void reset() {
-					jcrSettings.reset();
+					JCRConnectionSettings.reset();
+				}
+
+				public void apply() {
+					if (JCRConnectionSettings.isModified()) {
+						state = new State(JCRConnectionSettings.getState());
+						processNewConnectionSettings();
+					}
 				}
 
 				public void disposeUIResources() {
-					if (jcrSettings.isModified()) {
-						state = new State(jcrSettings.getState());
-						processNewConnectionSettings();
+					JCRConnectionSettings.disposeUIResources();
+				}
+			},
+			new FacetEditorTab() {
+				JCRMountPointSettings jcrMountPointSettings = new JCRMountPointSettings(state.getMountPoints());
+
+				@Nls
+				public String getDisplayName() {
+					return "Mount Points";
+				}
+
+				public JComponent createComponent() {
+					return jcrMountPointSettings.createComponent();
+				}
+
+				public boolean isModified() {
+					return jcrMountPointSettings.isModified();
+				}
+
+				public void reset() {
+					jcrMountPointSettings.reset();
+				}
+
+				public void apply() {
+					if (jcrMountPointSettings.isModified()) {
+						state.setMountPoints(jcrMountPointSettings.getMountPoints());
 					}
-					jcrSettings.disposeUIResources();
+				}
+
+				public void disposeUIResources() {
 				}
 			}
 		};

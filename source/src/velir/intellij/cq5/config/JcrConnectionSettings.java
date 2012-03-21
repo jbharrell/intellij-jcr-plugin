@@ -1,14 +1,13 @@
 package velir.intellij.cq5.config;
 
 import com.intellij.openapi.options.Configurable;
-import com.intellij.openapi.options.ConfigurationException;
 import com.intellij.openapi.ui.VerticalFlowLayout;
 import org.jetbrains.annotations.Nls;
 
 import javax.swing.*;
 import java.awt.*;
 
-public class JcrSettings implements Configurable {
+public class JCRConnectionSettings implements Configurable {
 	private JPanel jPanel;
 	private JTextField urlField;
 	private JTextField usernameField;
@@ -16,7 +15,7 @@ public class JcrSettings implements Configurable {
 	private JTextField workspaceField;
 	private JCRConfiguration.State state;
 
-	public JcrSettings (JCRConfiguration.State state) {
+	public JCRConnectionSettings(JCRConfiguration.State state) {
 		this.state = new JCRConfiguration.State(state);
 	}
 
