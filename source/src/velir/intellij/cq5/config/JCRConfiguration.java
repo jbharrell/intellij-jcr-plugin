@@ -286,4 +286,23 @@ public class JCRConfiguration implements FacetConfiguration, PersistentStateComp
 		//login to our repository and return our session
 		return rep.login(getCredentials(), state.workspace);
 	}
+
+	/**
+	 * get a mount point that contains the file system path, if there is one
+	 * @param path
+	 * @return
+	 */
+	public JCRMountPoint getMountPoint (String path) {
+		for (JCRMountPoint jcrMountPoint : state.getMountPoints()) {
+			if (jcrMountPoint.contains(path)) return jcrMountPoint;
+		}
+
+		return null;
+	}
+
+	public Node getNode (String path) throws RepositoryException {
+		JCRMountPoint jcrMountPoint = getMountPoint(path);
+		String jcrPath = jcrMountPoint.getJcrPath(path);
+		return getSession().getNode(jcrPath);
+	}
 }

@@ -1,19 +1,17 @@
 package velir.intellij.cq5.jcr.model;
 
-import com.day.cq.commons.date.InvalidDateException;
+import com.intellij.openapi.diagnostic.Logger;
 import com.intellij.openapi.util.JDOMUtil;
 import org.jdom.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
-import java.util.regex.Pattern;
-import com.day.cq.commons.date.DateUtil;
+
+import javax.jcr.*;
 
 public class VNode {
 
-	private static final Logger log = LoggerFactory.getLogger(VNode.class);
+	private static final Logger log = com.intellij.openapi.diagnostic.Logger.getInstance(VNode.class);
 
 	public static Map<String,Namespace> namespaces;
 
@@ -178,6 +176,80 @@ public class VNode {
 		}
 
 		vNode.canChangeType = false;
+
+		return vNode;
+	}
+
+	public static VNode makeVNode (final Node node) throws RepositoryException {
+		VNode vNode = new VNode(node.getName());
+		PropertyIterator propertyIterator = node.getProperties();
+		while (propertyIterator.hasNext()) {
+			Property property = propertyIterator.nextProperty();
+			AbstractProperty abstractProperty = null;
+
+			// handle multi-valued properties
+			if (property.isMultiple()) {
+				Value[] values = property.getValues();
+
+				if (property.getType() == PropertyType.BOOLEAN) {
+					boolean[] bs = new boolean[values.length];
+					for (int i = 0; i < values.length; i++) {
+						bs[i] = values[i].getBoolean();
+					}
+					abstractProperty = new XMLProperty(property.getName(), bs, AbstractProperty.BOOLEAN_ARRAY_PREFIX);
+				} else if (property.getType() == PropertyType.DOUBLE) {
+					double[] ds = new double[values.length];
+					for (int i = 0; i < values.length; i++) {
+						ds[i] = values[i].getDouble();
+					}
+					abstractProperty = new XMLProperty(property.getName(), ds, AbstractProperty.DOUBLE_ARRAY_PREFIX);
+				} else if (property.getType() == PropertyType.LONG) {
+					long[] ls = new long[values.length];
+					for (int i = 0; i < values.length; i++) {
+						ls[i] = values[i].getLong();
+					}
+					abstractProperty = new XMLProperty(property.getName(), ls, AbstractProperty.LONG_ARRAY_PREFIX);
+				} else if (property.getType() == PropertyType.STRING) {
+					String[] ss = new String[values.length];
+					for (int i = 0; i < values.length; i++) {
+						ss[i] = values[i].getString();
+					}
+					abstractProperty = new XMLProperty(property.getName(), ss, AbstractProperty.STRING_ARRAY_PREFIX);
+				} else {
+					log.warn("JCR property (multiple) unsupported: " + property.getType());
+
+					// fall back to string
+					String[] ss = new String[values.length];
+					for (int i = 0; i < values.length; i++) {
+						ss[i] = values[i].getString();
+					}
+					abstractProperty = new XMLProperty(property.getName(), ss, AbstractProperty.STRING_ARRAY_PREFIX);
+				}
+			}
+
+			// handle single-valued properties
+			else {
+				if (property.getType() == PropertyType.BOOLEAN) {
+					abstractProperty = new XMLProperty(property.getName(), property.getBoolean(),
+							AbstractProperty.BOOLEAN_PREFIX);
+				} else if (property.getType() == PropertyType.DOUBLE) {
+					abstractProperty = new XMLProperty(property.getName(), property.getDouble(),
+							AbstractProperty.DOUBLE_PREFIX);
+				} else if (property.getType() == PropertyType.LONG) {
+					abstractProperty = new XMLProperty(property.getName(), property.getLong(),
+							AbstractProperty.LONG_PREFIX);
+				} else if (property.getType() == PropertyType.STRING) {
+					abstractProperty = new XMLProperty(property.getName(), property.getString(),
+							AbstractProperty.STRING_PREFIX);
+				} else { // fall back to string
+					log.warn("JCR property unsupported: " + property.getType());
+					abstractProperty = new XMLProperty(property.getName(), property.getString(),
+							AbstractProperty.STRING_PREFIX);
+				}
+			}
+
+			vNode.setProperty(property.getName(), abstractProperty);
+		}
 
 		return vNode;
 	}

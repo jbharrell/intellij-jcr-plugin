@@ -1,5 +1,8 @@
 package velir.intellij.cq5.config;
 
+import javax.jcr.Node;
+import java.util.regex.Pattern;
+
 public class JCRMountPoint {
 	private static final String DEFAULT_FILESYSTEM_MOUNT_POINT = "";
 	private static final String DEFAULT_JCR_MOUNT_POINT = "/apps";
@@ -35,6 +38,37 @@ public class JCRMountPoint {
 
 	public void setJcrNode(String jcrNode) {
 		this.jcrNode = jcrNode;
+	}
+
+	/**
+	 * converts those pesky windows path separators
+	 * @return
+	 */
+	public String getFileSystemMountPointEscaped() {
+		return fileSystemMountPoint.replaceAll("\\\\", "/");
+	}
+
+	/**
+	 * Find the path to a jcr node by taking the path to a file, subtracting the filesystem mount point prefix
+	 * and adding the jcr mount point to the front
+	 *
+	 * @param filePath - the path
+	 * @return
+	 */
+	public String getJcrPath (String filePath) {
+		String path = jcrNode;
+		if (! jcrNode.endsWith("/")) path += "/";
+		path += filePath.replaceFirst(getFileSystemMountPointEscaped(), "").replaceFirst("^/", "");
+		return path;
+	}
+
+	/**
+	 * tells if a file is contains the filesystem mount point
+	 * @param filePath
+	 * @return
+	 */
+	public boolean contains(String filePath) {
+		return filePath.startsWith(getFileSystemMountPointEscaped());
 	}
 
 	public boolean equals (Object o) {
