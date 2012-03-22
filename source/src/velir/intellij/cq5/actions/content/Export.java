@@ -67,7 +67,7 @@ public class Export extends JCRAction {
 		VNode vNode = VNode.makeVNode(node);
 		PsiUtils.createNode(parent, vNode);
 
-		PsiDirectory insideDir = parent.findSubdirectory(vNode.getName());
+		PsiDirectory insideDir = parent.findSubdirectory(PsiUtils.mungeNamespace(vNode.getName()));
 
 		// recurse
 		NodeIterator nodeIterator = node.getNodes();
