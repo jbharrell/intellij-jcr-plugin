@@ -22,4 +22,9 @@ public class JCRFacet extends Facet<JCRConfiguration> {
 	public JCRConfiguration getJcrConfiguration() {
 		return jcrConfiguration;
 	}
+
+	public void initFacet() {
+		super.initFacet();
+		jcrConfiguration.processNewConnectionSettings();
+	}
 }
