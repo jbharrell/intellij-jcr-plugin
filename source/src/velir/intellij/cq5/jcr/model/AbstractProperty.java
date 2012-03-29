@@ -18,20 +18,21 @@ public abstract class AbstractProperty implements VProperty {
     public static final String BOOLEAN_ARRAY_PREFIX = BOOLEAN_PREFIX + "[]";
     public static final String LONG_ARRAY_PREFIX = LONG_PREFIX + "[]";
     public static final String DOUBLE_ARRAY_PREFIX = DOUBLE_PREFIX + "[]";
-
+	public static final String DATE_ARRAY_PREFIX = DATE_PREFIX + "[]";
 
     public static final String[] TYPESTRINGS = {
             STRING_PREFIX,
             BOOLEAN_PREFIX,
             DATE_PREFIX,
             DOUBLE_PREFIX,
+		    LONG_PREFIX,
             //NAME_PREFIX,
             //PATH_PREFIX,
             //BINARY_PREFIX,
-            LONG_PREFIX,
             LONG_ARRAY_PREFIX,
             DOUBLE_ARRAY_PREFIX,
             BOOLEAN_ARRAY_PREFIX,
+		    DATE_ARRAY_PREFIX,
             STRING_ARRAY_PREFIX
     };
 

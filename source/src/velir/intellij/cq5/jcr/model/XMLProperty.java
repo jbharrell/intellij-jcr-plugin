@@ -4,6 +4,7 @@ import com.day.cq.commons.date.DateUtil;
 import com.day.cq.commons.date.InvalidDateException;
 import com.intellij.openapi.diagnostic.Logger;
 import org.apache.jackrabbit.value.*;
+import org.omg.CORBA.DynAnyPackage.Invalid;
 
 import java.util.Calendar;
 import java.util.Date;
@@ -96,6 +97,24 @@ public class XMLProperty extends AbstractProperty {
 	            log.warn("Could not parse date", e);
                 retVal = new Date();
             }
+        } else if (valueStr.startsWith(DATE_PREFIX + "[")) {
+	        Date[] vals;
+	        String valueString = valueStr.substring(0, valueStr.length() - 1).replaceFirst(Pattern.quote(DATE_PREFIX + "["), "");
+	        if ("".equals(valueString)) vals = new Date[0];
+	        else {
+		        String[] valueBits = valueString.split(",");
+		        vals = new Date[valueBits.length];
+				for (int i = 0; i < valueBits.length; i++) {
+					try {
+						Calendar cal = DateUtil.parseISO8601(valueBits[i]);
+						vals[i] = cal.getTime();
+					} catch (InvalidDateException e) {
+						log.warn("Could not parse date " + valueBits[i], e);
+						vals[i] = new Date();
+					}
+				}
+	        }
+	        retVal = vals;
         }
         else if (valueStr.startsWith("[")) {
             String[] vals;
@@ -167,6 +186,14 @@ public class XMLProperty extends AbstractProperty {
 		} else if(value instanceof Date){
             //In format 2009-03-17T11:03:04.849+01:00
             retStr = DATE_PREFIX + DateUtil.getISO8601Date((Date) value);
+        } else if (value instanceof Date[]) {
+	        String s = DATE_PREFIX + "[";
+	        Date[] ds = (Date[]) value;
+	        if (ds.length == 0) return s + "]";
+	        for (int i = 0; i < ds.length - 1; i++) {
+		        s += DateUtil.getISO8601Date((Date) ds[i]) + ",";
+	        }
+	        retStr = s + DateUtil.getISO8601Date((Date) ds[ds.length - 1]) + "]";
         } else if(null != value){
 			retStr = escapeSlashes(value.toString());
 		}

@@ -27,7 +27,7 @@ public class VNode {
 	private Map<String, VProperty> properties;
 	protected boolean canChangeType;
 
-	private VNode (String name) {
+	public VNode (String name) {
 		this.name = name;
 		properties = new HashMap<String, VProperty>();
 		canChangeType = false;
@@ -215,6 +215,12 @@ public class VNode {
 						ss[i] = values[i].getString();
 					}
 					abstractProperty = new XMLProperty(property.getName(), ss, AbstractProperty.STRING_ARRAY_PREFIX);
+				} else if (property.getType() == PropertyType.DATE) {
+					Date[] ds = new Date[values.length];
+					for (int i = 0; i < values.length; i++) {
+						ds[i] = values[i].getDate().getTime();
+					}
+					abstractProperty = new XMLProperty(property.getName(), ds, AbstractProperty.DATE_ARRAY_PREFIX);
 				} else {
 					log.warn("JCR property (multiple) unsupported: " + property.getType());
 
@@ -241,6 +247,9 @@ public class VNode {
 				} else if (property.getType() == PropertyType.STRING) {
 					abstractProperty = new XMLProperty(property.getName(), property.getString(),
 							AbstractProperty.STRING_PREFIX);
+				} else if (property.getType() == PropertyType.DATE) {
+					abstractProperty = new XMLProperty(property.getName(), property.getDate().getTime(),
+							AbstractProperty.DATE_PREFIX);
 				} else { // fall back to string
 					log.warn("JCR property unsupported: " + property.getType());
 					abstractProperty = new XMLProperty(property.getName(), property.getString(),
