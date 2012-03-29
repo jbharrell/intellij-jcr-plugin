@@ -250,6 +250,10 @@ public class VNode {
 				} else if (property.getType() == PropertyType.DATE) {
 					abstractProperty = new XMLProperty(property.getName(), property.getDate().getTime(),
 							AbstractProperty.DATE_PREFIX);
+				} else if (property.getType() == PropertyType.NAME) {
+					// treat name as string
+					abstractProperty = new XMLProperty(property.getName(), property.getString(),
+							AbstractProperty.STRING_PREFIX);
 				} else { // fall back to string
 					log.warn("JCR property unsupported: " + property.getType());
 					abstractProperty = new XMLProperty(property.getName(), property.getString(),
