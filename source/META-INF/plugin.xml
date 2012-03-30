@@ -59,6 +59,11 @@
 			<add-to-group group-id="ProjectViewPopupMenu" anchor="after"
 			              relative-to-action="velir.intellij.cq5.actions.content.UnpackXml"/>
 		</action>
+		<action id="velir.intellij.cq5.actions.content.DestructiveImport" class="velir.intellij.cq5.actions.content.DestructiveImport"
+		        text="Import to JCR (destructive)">
+			<add-to-group group-id="ProjectViewPopupMenu" anchor="after"
+			              relative-to-action="velir.intellij.cq5.actions.content.Export"/>
+		</action>
 		<action id="velir.intellij.cq5.actions.content.ContextNodeCreator"
 		        class="velir.intellij.cq5.actions.content.ContextNodeCreator"
 		        text="New Contextual Node" description="add an in-context node">
