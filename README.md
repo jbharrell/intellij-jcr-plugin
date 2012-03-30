@@ -53,3 +53,10 @@ is already unpacked), and select unpack xml. This creates folders and
 .content.xml files for the inner nodes of the xml file. After doing so, you 
 will probably want to delete the original xml file.
 
+
+Known issues
+------------
+
+When importing content to CQ5, the properties for the node you're importing 
+won't be wiped in CQ5. Thus, new properties will be added, but old properties
+will not be removed
