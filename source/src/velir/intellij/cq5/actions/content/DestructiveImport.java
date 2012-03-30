@@ -23,6 +23,7 @@ import java.util.Date;
 
 public class DestructiveImport extends JCRAction {
 	private static final Logger log = com.intellij.openapi.diagnostic.Logger.getInstance(JCRAction.class);
+	public static final String JCR_MIXIN_TYPES = "jcr:mixinTypes";
 
 	@Override
 	public void actionPerformed(AnActionEvent anActionEvent) {
@@ -100,6 +101,15 @@ public class DestructiveImport extends JCRAction {
 	private void setProperties (Node node, VNode vNode) throws RepositoryException {
 		ValueFactory valueFactory = node.getSession().getValueFactory();
 
+		// handle mixins specially
+		if (node.hasProperty(JCR_MIXIN_TYPES)) {
+			Property property = node.getProperty(DestructiveImport.JCR_MIXIN_TYPES);
+			Value[] values = property.getValues();
+			for (Value value : values) {
+				node.addMixin(value.getString());
+			}
+		}
+
 		for (String propName : vNode.getSortedPropertyNames()) {
 
 			// only copy non-ignored properties
@@ -165,6 +175,7 @@ public class DestructiveImport extends JCRAction {
 
 	private boolean ignoreProperty (String name) {
 		return  AbstractProperty.JCR_PRIMARYTYPE.equals(name)
+			|| DestructiveImport.JCR_MIXIN_TYPES.equals(name)
 			|| "jcr:created".equals(name)
 			|| "jcr:createdBy".equals(name);
 	}
@@ -187,6 +198,7 @@ public class DestructiveImport extends JCRAction {
 		if ("ico".equals(endPart)) return "image/vnd.microsoft.icon";
 		if ("png".equals(endPart)) return "image/png";
 		if ("jsp".equals(endPart)) return "text/plain";
+		if ("css".equals(endPart)) return "text/css";
 
 		// default
 		return "text/plain";
