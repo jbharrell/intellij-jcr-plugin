@@ -3,33 +3,49 @@ Intellij IDEA JCR content editor plugin
 
 The idea behind this plugin is to allow people developing for CQ5 to use intellij for all aspects of development, so
 that they don't need to utilize CRXDE to edit jcr content (nodes/properties).
-
-Intended development process using this plugin
-----------------------------------------------
-
-1.	Use vault to export the JCR tree to a folder in your project directory
-2.	Set up your connection settings under project settings
-3.	Unpack any xml files exported by vault that you wish to edit, other than .content.xml (right click on xml file and select unpack xml)
-4.	Delete the original xml file if everything looks ok (eventually this will be done automatically in the unpack step, when this plugin is more mature/battle-tested)
-5.	Right click on files/folders in the content tree to add/edit nodes.
-6.	Use vault to import your new content back into CRX (I recommend using slantedjavas setup: http://slantedjava.blogspot.com/2011/03/using-vault-from-intellij.html). You should be able to import unpacked content
+This plugin provides a way of managing JCR content represented in XML (from the
+vault tool), and import/export functions to hopefully eliminate the need for
+the vault tool in the future. As the import/export functions are newer and have
+less (almost no) testing, they may vaporize your code and/or CQ5 installation.
+For safety, choose vault. For convenience, use the builtin plugin functions.
 
 Setup
 -----
 
-Go to project settings -> JCR Connection Settings 
-You may need to close/reopen project for changes to take effect.
-Currently the plugin only uses the JCR to build node definitions.
+Add the JCR facet to a module.
+You can change the connection settings if you wish, all though they should work
+as-is on a vanilla CQ5 installation.
+You must specify at least one mount point in the "Mount Points" tab.
+
+Mount Points
+------------
+
+The idea of a mount point is that a folder in your project should be aliased to
+a node in the JCR tree of your CQ5 installation. Most plugin operations will
+only work when activated at or within your file system mount point.
+
+Intended development process using this plugin
+----------------------------------------------
+
+1.	Setup the JCR facet
+2.	Export a section of the JCR tree to a local folder
+3.	Right-click nodes on the file system and select "Edit Node" to edit.
+4.	Add new nodes underneath the file system mount point with the "New" menu
+5.	Import the content back into the JCR
+
+Note that vault can be used in the import/export steps in place of the plugin,
+if desired.
 
 
 Functions
 ---------
 Two new actions are added to the new menu when you right click in the project
 pane: "New Component" and "New Node". New Component is just New Node where the
-nodetype is already set to cq:Component. 
+nodetype is already set to cq:Component. There are also new child node
+suggestions that are based on the parent node type.
 
-Right clicking on a .content.xml file, you can select "Edit Node" to bring up
-a dialog for editing node properties. 
+Right clicking on a .content.xml file or its parent folder, you can select
+"Edit Node" to bring up a dialog for editing node properties. 
 
 If you wish to edit content exported by vlt, you can right-click on an xml file
 (anything created by vlt like dialog.xml, except .content.xml which essentially
