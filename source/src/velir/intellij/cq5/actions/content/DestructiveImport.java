@@ -196,9 +196,11 @@ public class DestructiveImport extends JCRAction {
 		String endPart = dotParts[dotParts.length - 1].toLowerCase();
 		if ("jpg".equals(endPart)) return "image/jpeg";
 		if ("ico".equals(endPart)) return "image/vnd.microsoft.icon";
+		if ("gif".equals(endPart)) return "image/gif";
 		if ("png".equals(endPart)) return "image/png";
 		if ("jsp".equals(endPart)) return "text/plain";
 		if ("css".equals(endPart)) return "text/css";
+		if ("js".equals(endPart)) return "application/x-javascript";
 
 		// default
 		return "text/plain";
