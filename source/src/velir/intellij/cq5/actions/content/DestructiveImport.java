@@ -8,13 +8,17 @@ import com.intellij.openapi.actionSystem.Presentation;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.util.JDOMUtil;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
+import org.jdom.Document;
+import org.jdom.Element;
 import org.jdom.JDOMException;
 import velir.intellij.cq5.config.JCRConfiguration;
 import velir.intellij.cq5.jcr.model.AbstractProperty;
 import velir.intellij.cq5.jcr.model.VNode;
 import velir.intellij.cq5.jcr.model.VProperty;
+import velir.intellij.cq5.util.PsiUtils;
 
 import javax.jcr.*;
 import java.io.IOException;
@@ -90,10 +94,56 @@ public class DestructiveImport extends JCRAction {
 
 		// do files
 		for (PsiFile psiFile : directory.getFiles()) {
-			// skip node property definition files
+
+			// only do files that aren't property node definitions
 			if (! ".content.xml".equals(psiFile.getName())) {
-				importFile(node, psiFile);
+
+				// see if this is a packed node definition, and try to handle it
+				if ("text/xml".equals(getMimeType(psiFile.getName()))) {
+					final Document document = JDOMUtil.loadDocument(psiFile.getVirtualFile().getInputStream());
+					final Element rootElement = document.getRootElement();
+
+					// if this is a packed xml definition, start recursively generating jcr nodes
+					if ("jcr:root".equals(rootElement.getQualifiedName())) {
+						final VNode rootNode = VNode.makeVNode(rootElement);
+
+						// set root jcr node name by filename, rather than element name (since it's always jcr:root)
+						String name = PsiUtils.unmungeNamespace(psiFile.getName().split("\\.")[0]);
+						final Node childNode = node.addNode(name);
+						setProperties(childNode, rootNode);
+
+						// start recursion
+						unpackRecursively(rootElement, childNode);
+					}
+
+					// this is a regular file, import it as is
+					else {
+						importFile(node, psiFile);
+					}
+				}
+
+				// this is a regular file, import it as is
+				else {
+					importFile(node, psiFile);
+				}
 			}
+		}
+	}
+
+	/**
+	 * descend through xml elements, generating an equivalent jcr structure
+	 * @param element - root xml element
+	 * @param node    - root jcr node
+	 */
+	private void unpackRecursively (Element element, Node node) throws IOException, JDOMException, RepositoryException {
+
+		for (Object o : element.getChildren()) {
+			Element childElement = (Element) o;
+			VNode vNode = VNode.makeVNode(childElement);
+			Node childNode = node.addNode(vNode.getName());
+			setProperties(childNode, vNode);
+
+			unpackRecursively(childElement, childNode);
 		}
 	}
 
@@ -200,6 +250,7 @@ public class DestructiveImport extends JCRAction {
 		if ("png".equals(endPart)) return "image/png";
 		if ("jsp".equals(endPart)) return "text/plain";
 		if ("css".equals(endPart)) return "text/css";
+		if ("xml".equals(endPart)) return "text/xml";
 		if ("js".equals(endPart)) return "application/x-javascript";
 
 		// default
