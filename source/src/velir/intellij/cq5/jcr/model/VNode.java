@@ -64,10 +64,6 @@ public class VNode {
 		return properties.containsKey(name);
 	}
 
-	public String getPrimaryType () {
-		return (String) properties.get(AbstractProperty.JCR_PRIMARYTYPE).getValue();
-	}
-
 	/**
 	 * can remove property from node?
 	 * @param name

@@ -32,14 +32,24 @@ public class DestructiveImport extends JCRAction {
 	@Override
 	public void actionPerformed(AnActionEvent anActionEvent) {
 		final DataContext context = anActionEvent.getDataContext();
-		final Application application = ApplicationManager.getApplication();
 		IdeView ideView = LangDataKeys.IDE_VIEW.getData(context);
 		PsiDirectory[] dirs = ideView.getDirectories();
 		JCRConfiguration jcrConfiguration = getConfiguration(anActionEvent);
 
 		for (final PsiDirectory directory : dirs) {
 			try {
-				Node rootNode = jcrConfiguration.getNode(directory.getVirtualFile().getPath());
+				// if this node is a "typed" node, get the VNode version of it
+				VNode vNode = null;
+				PsiFile contentFile = directory.findFile(".content.xml");
+				if (contentFile != null) {
+					vNode = VNode.makeVNode(contentFile.getVirtualFile().getInputStream());
+				}
+
+				// get/create rootNode
+				Node rootNode = null;
+				String nodeType = vNode == null ? "nt:folder" : vNode.getType();
+				rootNode = jcrConfiguration.getNodeCreative(directory.getVirtualFile().getPath(),
+						"nt:folder", nodeType);
 
 				// wipe out existing nodes
 				NodeIterator nodeIterator = rootNode.getNodes();
@@ -51,9 +61,7 @@ public class DestructiveImport extends JCRAction {
 				// TODO : remove existing properties from rootNode
 
 				// set root node properties, if it has them
-				PsiFile contentFile = directory.findFile(".content.xml");
-				if (contentFile != null) {
-					VNode vNode = VNode.makeVNode(contentFile.getVirtualFile().getInputStream());
+				if (vNode != null) {
 					setProperties(rootNode, vNode);
 				}
 
@@ -81,7 +89,7 @@ public class DestructiveImport extends JCRAction {
 			// if this is a typed node
 			if (contentFile != null) {
 				VNode vNode = VNode.makeVNode(contentFile.getVirtualFile().getInputStream(), psiDirectory.getName());
-				subNode = node.addNode(vNode.getName(), vNode.getPrimaryType());
+				subNode = node.addNode(vNode.getName(), vNode.getType());
 				setProperties(subNode, vNode);
 			}
 			// if this is just a folder node

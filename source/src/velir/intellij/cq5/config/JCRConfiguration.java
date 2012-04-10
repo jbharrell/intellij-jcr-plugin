@@ -1,5 +1,6 @@
 package velir.intellij.cq5.config;
 
+import com.day.cq.commons.jcr.JcrUtil;
 import com.intellij.facet.FacetConfiguration;
 import com.intellij.facet.ProjectFacetManager;
 import com.intellij.facet.ui.FacetEditorContext;
@@ -304,5 +305,20 @@ public class JCRConfiguration implements FacetConfiguration, PersistentStateComp
 		JCRMountPoint jcrMountPoint = getMountPoint(path);
 		String jcrPath = jcrMountPoint.getJcrPath(path);
 		return getSession().getNode(jcrPath);
+	}
+
+
+	/**
+	 * if the node doesn't exist, create it. Return it regardless
+	 * @param path
+	 * @return
+	 * @throws RepositoryException
+	 */
+	public Node getNodeCreative (String path, String intermediateType, String nodeType) throws RepositoryException {
+		JCRMountPoint jcrMountPoint = getMountPoint(path);
+		String jcrPath = jcrMountPoint.getJcrPath(path);
+		Session session = getSession();
+
+		return JcrUtil.createPath(jcrPath, intermediateType, nodeType, session, false);
 	}
 }
