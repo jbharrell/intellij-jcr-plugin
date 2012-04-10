@@ -6,7 +6,7 @@ that they don't need to utilize CRXDE to edit jcr content (nodes/properties).
 This plugin provides a way of managing JCR content represented in XML (from the
 vault tool), and import/export functions to hopefully eliminate the need for
 the vault tool in the future. As the import/export functions are newer and have
-less (almost no) testing, they may vaporize your code and/or CQ5 installation.
+less testing, they may vaporize your code and/or CQ5 installation.
 For safety, choose vault. For convenience, use the builtin plugin functions.
 
 Setup
