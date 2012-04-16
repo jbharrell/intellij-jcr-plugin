@@ -117,7 +117,7 @@ public class DestructiveImport extends JCRAction {
 
 						// set root jcr node name by filename, rather than element name (since it's always jcr:root)
 						String name = PsiUtils.unmungeNamespace(psiFile.getName().split("\\.")[0]);
-						final Node childNode = node.addNode(name);
+						final Node childNode = node.addNode(name, rootNode.getType());
 						setProperties(childNode, rootNode);
 
 						// start recursion
@@ -148,7 +148,7 @@ public class DestructiveImport extends JCRAction {
 		for (Object o : element.getChildren()) {
 			Element childElement = (Element) o;
 			VNode vNode = VNode.makeVNode(childElement);
-			Node childNode = node.addNode(vNode.getName());
+			Node childNode = node.addNode(vNode.getName(), vNode.getType());
 			setProperties(childNode, vNode);
 
 			unpackRecursively(childElement, childNode);
