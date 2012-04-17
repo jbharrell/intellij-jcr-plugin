@@ -9,11 +9,13 @@
 		<!-- Add your application components here -->
 	</application-components>
 
+	<!--
 	<project-components>
 		<component>
 			<implementation-class>velir.intellij.cq5.components.JcrViewComponent</implementation-class>
 		</component>
 	</project-components>
+	-->
 
 	<actions>
 		<!--
