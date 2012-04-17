@@ -6,7 +6,8 @@ that they don't need to utilize CRXDE to edit jcr content (nodes/properties).
 This plugin provides a way of managing JCR content represented in XML (from the
 vault tool), and import/export functions to hopefully eliminate the need for
 the vault tool in the future. As the import/export functions are newer and have
-less testing, they may vaporize your code and/or CQ5 installation.
+less testing, they may vaporize your code and/or CQ5 installation (but you have
+everything stored in version control, so it doesn't matter, right?).
 For safety, choose vault. For convenience, use the builtin plugin functions.
 
 Setup
@@ -52,6 +53,10 @@ If you wish to edit content exported by vlt, you can right-click on an xml file
 is already unpacked), and select unpack xml. This creates folders and
 .content.xml files for the inner nodes of the xml file. After doing so, you 
 will probably want to delete the original xml file.
+
+Vault export will fail with an error if any of the files that would be exported
+already exist. On the other hand, vault import will delete all the content 
+under the node you're importing to, and then copy over the new content.
 
 
 Known issues
