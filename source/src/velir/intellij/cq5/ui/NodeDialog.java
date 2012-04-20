@@ -24,10 +24,11 @@ public class NodeDialog extends DialogWrapper {
 	private Map<String,ValueInput> propertyInputs;
 	private FieldConstructor fieldConstructor;
 
-	private interface PrimaryTypeFetcher {
+	private interface StringValueFetcher {
 		public String get();
 	}
-	private PrimaryTypeFetcher primaryTypeFetcher;
+	private StringValueFetcher primaryTypeFetcher;
+	private StringValueFetcher nameFetcher;
 
 	public NodeDialog(Project project, final VNode vNode, boolean isNew) {
 		super(project, false);
@@ -37,11 +38,20 @@ public class NodeDialog extends DialogWrapper {
 		this.name = vNode.getName();
 		propertyInputs = new HashMap<String, ValueInput>();
 		fieldConstructor = new FieldConstructor();
-		primaryTypeFetcher = new PrimaryTypeFetcher() {
+
+		// set fetchers to return initial values
+		primaryTypeFetcher = new StringValueFetcher() {
 			public String get() {
 				return (String) vNode.getProperty(AbstractProperty.JCR_PRIMARYTYPE).getValue();
 			}
 		};
+		final String finalName = name;
+		nameFetcher = new StringValueFetcher() {
+			public String get() {
+				return finalName;
+			}
+		};
+
 		populatePropertiesPanel(vNode);
 
 		init();
@@ -112,6 +122,11 @@ public class NodeDialog extends DialogWrapper {
 		final JTextField nameField = new JTextField(name);
 		nameField.setEditable(canChangeName);
 		namePanel.add(nameField);
+		nameFetcher = new StringValueFetcher() {
+			public String get() {
+				return nameField.getText();
+			}
+		};
 		rootPanel.add(namePanel);
 
 		// if we could not connect to the JCR, display warning
@@ -138,7 +153,7 @@ public class NodeDialog extends DialogWrapper {
 						changeNodeType(newPrimaryType);
 					}
 				});
-				primaryTypeFetcher = new PrimaryTypeFetcher() {
+				primaryTypeFetcher = new StringValueFetcher() {
 					public String get() {
 						return (String) jComboBox.getSelectedItem();
 					}
@@ -148,7 +163,7 @@ public class NodeDialog extends DialogWrapper {
 			// if we couldn't connect to the JCR, just allow the user to put anything in for primary type
 			else {
 				final JTextField primaryTypeField = new JTextField(jcrType);
-				primaryTypeFetcher = new PrimaryTypeFetcher() {
+				primaryTypeFetcher = new StringValueFetcher() {
 					public String get() {
 						return primaryTypeField.getText();
 					}
@@ -227,7 +242,7 @@ public class NodeDialog extends DialogWrapper {
 	}
 
 	public VNode getVNode() {
-		VNode vNode = new VNode(name);
+		VNode vNode = new VNode(nameFetcher.get());
 
 		// set primary type
 		vNode.setProperty(AbstractProperty.JCR_PRIMARYTYPE,
