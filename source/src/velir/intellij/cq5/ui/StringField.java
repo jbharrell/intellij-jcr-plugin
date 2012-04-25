@@ -8,6 +8,7 @@ public class StringField extends JTextField implements ValueInput {
 
 	public StringField(String s) {
 		super(s);
+		setPreferredSize(RegexTextField.GOOD_SIZE);
 	}
 
 	public Object getValue() {
