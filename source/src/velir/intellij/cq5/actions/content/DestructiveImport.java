@@ -1,19 +1,24 @@
 package velir.intellij.cq5.actions.content;
 
 import com.intellij.ide.IdeView;
-import com.intellij.openapi.actionSystem.AnActionEvent;
-import com.intellij.openapi.actionSystem.DataContext;
-import com.intellij.openapi.actionSystem.LangDataKeys;
-import com.intellij.openapi.actionSystem.Presentation;
+import com.intellij.openapi.actionSystem.*;
 import com.intellij.openapi.application.Application;
 import com.intellij.openapi.application.ApplicationManager;
 import com.intellij.openapi.diagnostic.Logger;
+import com.intellij.openapi.progress.PerformInBackgroundOption;
+import com.intellij.openapi.progress.ProgressIndicator;
+import com.intellij.openapi.progress.ProgressManager;
+import com.intellij.openapi.progress.Task;
+import com.intellij.openapi.project.Project;
 import com.intellij.openapi.util.JDOMUtil;
+import com.intellij.openapi.vcs.changes.BackgroundFromStartOption;
 import com.intellij.psi.PsiDirectory;
 import com.intellij.psi.PsiFile;
+import org.apache.jackrabbit.util.Timer;
 import org.jdom.Document;
 import org.jdom.Element;
 import org.jdom.JDOMException;
+import org.jetbrains.annotations.NotNull;
 import velir.intellij.cq5.config.JCRConfiguration;
 import velir.intellij.cq5.jcr.model.AbstractProperty;
 import velir.intellij.cq5.jcr.model.VNode;
@@ -32,51 +37,64 @@ public class DestructiveImport extends JCRAction {
 	@Override
 	public void actionPerformed(AnActionEvent anActionEvent) {
 		final DataContext context = anActionEvent.getDataContext();
-		IdeView ideView = LangDataKeys.IDE_VIEW.getData(context);
-		PsiDirectory[] dirs = ideView.getDirectories();
-		JCRConfiguration jcrConfiguration = getConfiguration(anActionEvent);
+		final IdeView ideView = LangDataKeys.IDE_VIEW.getData(context);
+		final PsiDirectory[] dirs = ideView.getDirectories();
+		final JCRConfiguration jcrConfiguration = getConfiguration(anActionEvent);
+		final Application application = ApplicationManager.getApplication();
+		final Project project = anActionEvent.getData(PlatformDataKeys.PROJECT);
 
-		for (final PsiDirectory directory : dirs) {
-			try {
-				// if this node is a "typed" node, get the VNode version of it
-				VNode vNode = null;
-				PsiFile contentFile = directory.findFile(".content.xml");
-				if (contentFile != null) {
-					vNode = VNode.makeVNode(contentFile.getVirtualFile().getInputStream());
+		Task task = new Task.Backgroundable(project, "JCR Import", true, BackgroundFromStartOption.getInstance()) {
+			public void run(@NotNull ProgressIndicator progressIndicator) {
+				progressIndicator.setIndeterminate(true);
+				progressIndicator.setText("Importing to JCR...");
+				for (final PsiDirectory directory : dirs) {
+					application.runReadAction(new Runnable() {
+						public void run() {
+							try {
+								// if this node is a "typed" node, get the VNode version of it
+								VNode vNode = null;
+								PsiFile contentFile = directory.findFile(".content.xml");
+								if (contentFile != null) {
+									vNode = VNode.makeVNode(contentFile.getVirtualFile().getInputStream());
+								}
+
+								// get/create rootNode
+								Node rootNode = null;
+								String nodeType = vNode == null ? "nt:folder" : vNode.getType();
+								rootNode = jcrConfiguration.getNodeCreative(directory.getVirtualFile().getPath(),
+										"nt:folder", nodeType);
+
+								// wipe out existing nodes
+								NodeIterator nodeIterator = rootNode.getNodes();
+								while (nodeIterator.hasNext()) {
+									Node node = nodeIterator.nextNode();
+									node.remove();
+								}
+
+								// TODO : remove existing properties from rootNode
+
+								// set root node properties, if it has them
+								if (vNode != null) {
+									setProperties(rootNode, vNode);
+								}
+
+								// start import to jcr
+								importR(rootNode, directory);
+								rootNode.getSession().save();
+
+							} catch (RepositoryException re) {
+								log.error("could not import nodes to jcr", re);
+							} catch (IOException ioe) {
+								log.error("could not import nodes to jcr", ioe);
+							} catch (JDOMException jde) {
+								log.error("could not import nodes to jcr", jde);
+							}
+						}
+					});
 				}
-
-				// get/create rootNode
-				Node rootNode = null;
-				String nodeType = vNode == null ? "nt:folder" : vNode.getType();
-				rootNode = jcrConfiguration.getNodeCreative(directory.getVirtualFile().getPath(),
-						"nt:folder", nodeType);
-
-				// wipe out existing nodes
-				NodeIterator nodeIterator = rootNode.getNodes();
-				while (nodeIterator.hasNext()) {
-					Node node = nodeIterator.nextNode();
-					node.remove();
-				}
-
-				// TODO : remove existing properties from rootNode
-
-				// set root node properties, if it has them
-				if (vNode != null) {
-					setProperties(rootNode, vNode);
-				}
-
-				// start import to jcr
-				importR(rootNode, directory);
-				rootNode.getSession().save();
-
-			} catch (RepositoryException re) {
-				log.error("could not import nodes to jcr", re);
-			} catch (IOException ioe) {
-				log.error("could not import nodes to jcr", ioe);
-			} catch (JDOMException jde) {
-				log.error("could not import nodes to jcr", jde);
 			}
-		}
+		};
+		ProgressManager.getInstance().run(task);
 	}
 
 	private void importR (Node node, PsiDirectory directory) throws RepositoryException, IOException, JDOMException {
