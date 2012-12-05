@@ -186,12 +186,9 @@ public class DestructiveImport extends JCRAction {
 		ValueFactory valueFactory = node.getSession().getValueFactory();
 
 		// handle mixins specially
-		if (node.hasProperty(JCR_MIXIN_TYPES)) {
-			Property property = node.getProperty(DestructiveImport.JCR_MIXIN_TYPES);
-			Value[] values = property.getValues();
-			for (Value value : values) {
-				node.addMixin(value.getString());
-			}
+        if (vNode.hasProperty(JCR_MIXIN_TYPES)) {
+            String[] mixinNames = (String[]) vNode.getProperty(JCR_MIXIN_TYPES).getValue();
+            for (String mixin : mixinNames) node.addMixin(mixin);
 		}
 
 		for (String propName : vNode.getSortedPropertyNames()) {
