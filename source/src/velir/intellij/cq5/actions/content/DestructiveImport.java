@@ -106,9 +106,17 @@ public class DestructiveImport extends JCRAction {
 
 			// if this is a typed node
 			if (contentFile != null) {
-				VNode vNode = VNode.makeVNode(contentFile.getVirtualFile().getInputStream(), psiDirectory.getName());
+                final Document document = JDOMUtil.loadDocument(contentFile.getVirtualFile().getInputStream());
+                final Element rootElement = document.getRootElement();
+
+				VNode vNode = VNode.makeVNode(rootElement);
+                vNode.setName(psiDirectory.getName());
+
 				subNode = node.addNode(PsiUtils.unmungeNamespace(vNode.getName()), vNode.getType());
 				setProperties(subNode, vNode);
+
+                // recurse to handle packed xml files
+                unpackRecursively(rootElement, subNode);
 			}
 			// if this is just a folder node
 			else {
