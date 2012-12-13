@@ -159,7 +159,7 @@ public class JCRConfiguration implements FacetConfiguration, PersistentStateComp
 	public FacetEditorTab[] createEditorTabs(FacetEditorContext facetEditorContext, FacetValidatorsManager facetValidatorsManager) {
 		return new FacetEditorTab[] {
 			new FacetEditorTab() {
-				JCRConnectionSettings JCRConnectionSettings = new JCRConnectionSettings(state);
+				JcrConnectionSettings JCRConnectionSettings = new JcrConnectionSettings(state);
 
 				@Nls
 				public String getDisplayName() {

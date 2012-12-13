@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nls;
 import javax.swing.*;
 import java.awt.*;
 
-public class JCRConnectionSettings implements Configurable {
+public class JcrConnectionSettings implements Configurable {
 	private JPanel jPanel;
 	private JTextField urlField;
 	private JTextField usernameField;
@@ -15,7 +15,7 @@ public class JCRConnectionSettings implements Configurable {
 	private JTextField workspaceField;
 	private JCRConfiguration.State state;
 
-	public JCRConnectionSettings(JCRConfiguration.State state) {
+	public JcrConnectionSettings(JCRConfiguration.State state) {
 		this.state = new JCRConfiguration.State(state);
 	}
 
