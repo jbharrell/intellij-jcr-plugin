@@ -8,43 +8,19 @@
     </content>
     <orderEntry type="jdk" jdkName="IDEA IU-107.587" jdkType="IDEA JDK" />
     <orderEntry type="sourceFolder" forTests="false" />
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/javax/jcr/2.0/jcr-2.0.jar!/" />
-        </CLASSES>
-        <JAVADOC>
-          <root url="jar://$MODULE_DIR$/lib/javax/jcr/2.0/jcr-2.0-javadoc.jar!/" />
-        </JAVADOC>
-        <SOURCES>
-          <root url="jar://$MODULE_DIR$/lib/javax/jcr/2.0/jcr-2.0-sources.jar!/" />
-        </SOURCES>
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/cq-commons/cq-commons-5.4.6.jar!/" />
-        </CLASSES>
-        <JAVADOC>
-          <root url="jar://$MODULE_DIR$/lib/cq-commons/cq-commons-5.4.6-javadoc.jar!/" />
-        </JAVADOC>
-        <SOURCES />
-      </library>
-    </orderEntry>
-    <orderEntry type="module-library">
-      <library>
-        <CLASSES>
-          <root url="jar://$MODULE_DIR$/lib/crx-jcr-client/com.day.crx.jcr.client_1.0.1.jar!/" />
-        </CLASSES>
-        <JAVADOC />
-        <SOURCES />
-      </library>
-    </orderEntry>
     <orderEntry type="library" name="slf4j" level="project" />
     <orderEntry type="library" name="jcr" level="project" />
     <orderEntry type="library" name="jackrabbit" level="project" />
-    <orderEntry type="library" name="cq5" level="project" />
+    <orderEntry type="module-library">
+      <library>
+        <CLASSES>
+          <root url="file://$MODULE_DIR$/../libs/cq5" />
+        </CLASSES>
+        <JAVADOC />
+        <SOURCES />
+        <jarDirectory url="file://$MODULE_DIR$/../libs/cq5" recursive="false" />
+      </library>
+    </orderEntry>
   </component>
 </module>
 
