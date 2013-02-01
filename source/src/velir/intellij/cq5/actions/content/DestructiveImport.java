@@ -53,9 +53,11 @@ public class DestructiveImport extends JCRAction {
 							try {
 								// if this node is a "typed" node, get the VNode version of it
 								VNode vNode = null;
+								Element rootElement = null;
 								PsiFile contentFile = directory.findFile(".content.xml");
 								if (contentFile != null) {
-									vNode = VNode.makeVNode(contentFile.getVirtualFile().getInputStream());
+									rootElement = JDOMUtil.loadDocument(contentFile.getVirtualFile().getInputStream()).getRootElement();
+									vNode = VNode.makeVNode(rootElement);
 								}
 
 								// get/create rootNode
@@ -76,6 +78,7 @@ public class DestructiveImport extends JCRAction {
 								// set root node properties, if it has them
 								if (vNode != null) {
 									setProperties(rootNode, vNode);
+									unpackRecursively(rootElement, rootNode);
 								}
 
 								// start import to jcr
