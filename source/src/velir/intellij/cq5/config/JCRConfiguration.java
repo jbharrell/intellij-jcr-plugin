@@ -221,10 +221,12 @@ public class JCRConfiguration implements FacetConfiguration, PersistentStateComp
 		};
 	}
 
+	@Deprecated
 	public void readExternal(Element element) throws InvalidDataException {
 		//deprecated, so will not implement
 	}
 
+	@Deprecated
 	public void writeExternal(Element element) throws WriteExternalException {
 		//deprecated, so will not implement
 	}
