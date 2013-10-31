@@ -1,0 +1,49 @@
+apply plugin: 'java'
+apply plugin: 'idea'
+
+sourceCompatibility = 1.5
+version = '1.0'
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'intellij-jcr-plugin', 'Implementation-Version': version
+    }
+}
+
+repositories {
+    mavenCentral()
+    maven {
+        url "http://repo.adobe.com/nexus/content/groups/public/"
+    }
+    flatDir {
+        dirs "../libs"
+    }
+}
+
+List cq5 =        [ "com.day.cq:cq-commons:5.5.0",
+                    "com.day.jcr.vault:com.day.jcr.vault:2.4.18" ]
+List intellij =   [ "com.intellij:openapi:7.0.3",
+                    "com.intellij:annotations:12.0",
+                    "com.intellij:extensions:7.0.3" ]
+List commons =    [ "commons-collections:commons-collections:3.2.1" ]
+List jcr =        [ "javax.jcr:jcr:2.0" ]
+List jackrabbit = [ "org.apache.jackrabbit:jackrabbit-jcr-commons:2.2.4",
+                    "org.apache.jackrabbit:jackrabbit-spi:2.2.4",
+                    "org.apache.jackrabbit:jackrabbit-webdav:2.2.4",
+                    "org.apache.jackrabbit:jackrabbit-jcr2dav:2.2.4",
+                    "org.apache.jackrabbit:jackrabbit-jcr2spi:2.2.4",
+                    "org.apache.jackrabbit:jackrabbit-spi-commons:2.2.4" ]
+List slf4j =      [ "org.slf4j:slf4j-log4j12:1.5.11",
+                    "org.slf4j:slf4j-api:1.5.11",
+                    "log4j:log4j:1.2.14" ]
+
+dependencies {
+	runtime jcr, jackrabbit, commons, slf4j, cq5
+    compile intellij
+}
+
+task dist(type: Zip) {
+    from 'src/dist'
+    into('libs') {
+        from configurations.runtime
+    }
+}
