@@ -1,12 +1,8 @@
 apply plugin: 'java'
 apply plugin: 'idea'
 
-sourceCompatibility = 1.5
-version = '1.0'
-jar {
-    manifest {
-        attributes 'Implementation-Title': 'intellij-jcr-plugin', 'Implementation-Version': version
-    }
+task wrapper(type: Wrapper) {
+    gradleVersion = '1.8'
 }
 
 repositories {
@@ -14,11 +10,8 @@ repositories {
     maven {
         url "http://repo.adobe.com/nexus/content/groups/public/"
     }
-    flatDir {
-        dirs "../libs"
-    }
 }
-
+/*
 List cq5 =        [ "com.day.cq:cq-commons:5.5.0",
                     "com.day.jcr.vault:com.day.jcr.vault:2.4.18" ]
 List intellij =   [ "com.intellij:openapi:7.0.3",
@@ -35,15 +28,77 @@ List jackrabbit = [ "org.apache.jackrabbit:jackrabbit-jcr-commons:2.2.4",
 List slf4j =      [ "org.slf4j:slf4j-log4j12:1.5.11",
                     "org.slf4j:slf4j-api:1.5.11",
                     "log4j:log4j:1.2.14" ]
+*/
+
+sourceCompatibility = 1.6
+version = '1.0'
+
+/*
+jar {
+    manifest {
+        attributes 'Implementation-Title': 'intellij-jcr-plugin', 'Implementation-Version': version
+    }
+}
+*/
 
 dependencies {
-	runtime jcr, jackrabbit, commons, slf4j, cq5
-    compile intellij
+
+    /*
+    compile "com.intellij:openapi:7.0.3"
+    compile "com.intellij:annotations:12.0"
+    compile "com.intellij:extensions:7.0.3"
+    */
+
+    //TODO: Make this better: https://github.com/gradle/gradle-intellij-gui/blob/master/build.gradle
+    compile  files([new File("C:\\Program Files (x86)\\JetBrains\\IntelliJ IDEA Community Edition 12.1.2\\lib","annotations.jar")])
+    compile  files([new File("C:\\Program Files (x86)\\JetBrains\\IntelliJ IDEA Community Edition 12.1.2\\lib","extensions.jar")])
+    compile  files([new File("C:\\Program Files (x86)\\JetBrains\\IntelliJ IDEA Community Edition 12.1.2\\lib","jdom.jar")])
+    compile  files([new File("C:\\Program Files (x86)\\JetBrains\\IntelliJ IDEA Community Edition 12.1.2\\lib","openapi.jar")])
+    compile  files([new File("C:\\Program Files (x86)\\JetBrains\\IntelliJ IDEA Community Edition 12.1.2\\lib","util.jar")])
+
+    compile "com.day.cq:cq-commons:5.5.0"
+    compile "com.day.jcr.vault:com.day.jcr.vault:2.4.18"
+
+    compile "commons-collections:commons-collections:3.2.1"
+    compile "javax.jcr:jcr:2.0"
+    // compile "org.jdom:jdom:1.1"
+    compile "org.apache.jackrabbit:jackrabbit-jcr-commons:2.2.4"
+    compile "org.apache.jackrabbit:jackrabbit-spi:2.2.4"
+    compile "org.apache.jackrabbit:jackrabbit-webdav:2.2.4"
+    compile "org.apache.jackrabbit:jackrabbit-jcr2dav:2.2.4"
+    compile "org.apache.jackrabbit:jackrabbit-jcr2spi:2.2.4"
+    compile "org.apache.jackrabbit:jackrabbit-spi-commons:2.2.4"
+    compile "org.slf4j:slf4j-log4j12:1.5.11"
+    compile "org.slf4j:slf4j-api:1.5.11"
+    compile "log4j:log4j:1.2.14"
 }
 
+/*
+sourceSets {
+    main {
+        srcDirs = ["src/main/java"]
+    }
+}
+*/
+
+/*
 task dist(type: Zip) {
     from 'src/dist'
     into('libs') {
         from configurations.runtime
     }
 }
+*/
+/*
+sourceSets.main.compileClasspath += configurations.runtime
+
+sourceSets.main.compileClasspath += configurations.compile
+*/
+
+/*
+task deplist(){
+    println(sourceSets.main.compileClasspath)
+    println(getRootProject())
+    sourceSets.main.compileClasspath.each{println(it)}
+}
+*/
