@@ -1,2 +1,9 @@
 out
 /intellij-jcr-plugin.zip
+.gradle
+.idea
+*.ipr
+*.iws
+*.iml
+build
+
